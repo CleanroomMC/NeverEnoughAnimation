@@ -1,6 +1,8 @@
 package com.cleanroommc.neverenoughanimations;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.MinecraftForge;
@@ -12,6 +14,9 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,5 +55,14 @@ public class NEA {
 
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
+    }
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onGuiTick(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) return;
+        GuiScreen current = Minecraft.getMinecraft().currentScreen;
+        ItemHoverAnimation.onGuiTick(current);
+        ItemMoveAnimation.onGuiTick(current);
     }
 }
