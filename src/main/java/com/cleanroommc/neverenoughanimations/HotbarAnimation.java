@@ -10,6 +10,7 @@ public class HotbarAnimation {
     private static long startTime = 0;
 
     public static void animate(int oldIndex, int newIndex) {
+        if (NEAConfig.hotbarAnimationTime == 0) return;
         if (isAnimationInProgress()) {
             fromX = currentX;
         } else {
@@ -36,7 +37,7 @@ public class HotbarAnimation {
 
     public static int getX(ScaledResolution sr) {
         int def = Minecraft.getMinecraft().player.inventory.currentItem;
-        if (oldIndex < 0 || newIndex < 0) return getX(sr, def);
+        if (NEAConfig.hotbarAnimationTime == 0 || oldIndex < 0 || newIndex < 0) return getX(sr, def);
         if (def != newIndex) {
             // index unexpectedly changed, abort animation
             reset();
@@ -54,6 +55,6 @@ public class HotbarAnimation {
     }
 
     public static int getX(ScaledResolution sr, int index) {
-        return sr.getScaledWidth() / 2 - 91 - 1 + index * 20;
+        return sr.getScaledWidth() / 2 - 91 - 1 + index * 20; // vanilla behaviour
     }
 }

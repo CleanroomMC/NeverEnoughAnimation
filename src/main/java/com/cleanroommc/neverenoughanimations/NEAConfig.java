@@ -13,15 +13,15 @@ public class NEAConfig {
 
     public static Interpolation hoverAnimationCurve = Interpolation.QUAD_INOUT;
 
-    @Config.Comment("If the gray slot overlay should be rendered at all on hover.")
+    @Config.Comment("If the gray slot overlay should be rendered at all on hover. Default: false")
     public static boolean itemHoverOverlay = false;
 
     @Config.SlidingOption
     @Config.RangeInt(min = 0, max = 2000)
     @Config.Comment("How many millieseconds it takes until an item has moved to its target. 0 to disable.")
-    public static int moveAnimationTime = 500;
+    public static int moveAnimationTime = 200;
 
-    public static Interpolation moveAnimationCurve = Interpolation.QUART_OUT;
+    public static Interpolation moveAnimationCurve = Interpolation.SINE_OUT;
 
     @Config.SlidingOption
     @Config.RangeInt(min = 0, max = 2000)

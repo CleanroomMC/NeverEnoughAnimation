@@ -6,7 +6,10 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -64,5 +67,12 @@ public class NEA {
         GuiScreen current = Minecraft.getMinecraft().currentScreen;
         ItemHoverAnimation.onGuiTick(current);
         ItemMoveAnimation.onGuiTick(current);
+    }
+
+    @SubscribeEvent
+    public void onConfigChanged(ConfigChangedEvent event) {
+        if (event.getModID().equals(Tags.MODID)) {
+            ConfigManager.sync(Tags.MODID, Config.Type.INSTANCE);
+        }
     }
 }

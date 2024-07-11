@@ -38,6 +38,7 @@ public class ItemMoveAnimation {
 
     @ApiStatus.Internal
     public static void onGuiTick(GuiScreen current) {
+        if (NEAConfig.moveAnimationTime == 0) return;
         if (!(current instanceof GuiContainer)) {
             if (lastGui != null) {
                 lastGui = null;
@@ -62,6 +63,7 @@ public class ItemMoveAnimation {
 
     @ApiStatus.Internal
     public static void updateVirtualStack(int target, ItemStack stack, int op) {
+        if (NEAConfig.moveAnimationTime == 0) return;
         while (target >= virtualStacks.size()) {
             // ensure size and default values
             virtualStacks.add(null);
@@ -82,7 +84,7 @@ public class ItemMoveAnimation {
      */
     @ApiStatus.Internal
     public static Pair<List<Slot>, List<ItemStack>> getCandidates(Slot in, List<Slot> allSlots) {
-        if (Minecraft.getSystemTime() - lastAnimation <= 10) return null;
+        if (NEAConfig.moveAnimationTime == 0 || Minecraft.getSystemTime() - lastAnimation <= 10) return null;
         List<Slot> slots = new ArrayList<>(allSlots.size());
         List<ItemStack> stacks = new ArrayList<>(allSlots.size());
         ItemStack item = in.getStack();
