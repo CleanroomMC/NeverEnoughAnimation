@@ -1,15 +1,15 @@
 {
   "package": "com.cleanroommc.neverenoughanimations.core.mixin",
-  "refmap": "mixins.nea.refmap.json",
+  "refmap": "mixins.neverenoughanimations.refmap.json",
   "target": "@env(DEFAULT)",
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "ContainerMixin",
     "GuiContainerMixin",
-    "GuiIngameMixin",
-    "InventoryPlayerMixin"
+    "GuiIngameMixin"
   ],
   "mixins": [
+    "ContainerMixin",
+    "InventoryPlayerMixin"
   ]
 }

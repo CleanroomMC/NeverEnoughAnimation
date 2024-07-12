@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 public class GuiIngameMixin extends Gui {
 
     @ModifyArg(method = "renderHotbar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;drawTexturedModalRect(IIIIII)V", ordinal = 1), index = 0)
-    public int renderCurrentItemMarker(int par1, @Local(ordinal = 0, argsOnly = true) ScaledResolution sr) {
+    public int renderCurrentItemMarker(int x, @Local(ordinal = 0, argsOnly = true) ScaledResolution sr) {
         return HotbarAnimation.getX(sr);
     }
 }
