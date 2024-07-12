@@ -1,5 +1,6 @@
-package com.cleanroommc.neverenoughanimations;
+package com.cleanroommc.neverenoughanimations.animations;
 
+import com.cleanroommc.neverenoughanimations.NEAConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 

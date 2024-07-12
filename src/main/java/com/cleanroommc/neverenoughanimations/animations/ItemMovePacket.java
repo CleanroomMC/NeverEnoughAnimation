@@ -1,7 +1,6 @@
-package com.cleanroommc.neverenoughanimations;
+package com.cleanroommc.neverenoughanimations.animations;
 
-import com.cleanroommc.neverenoughanimations.util.IInterpolation;
-import com.cleanroommc.neverenoughanimations.util.Interpolation;
+import com.cleanroommc.neverenoughanimations.NEAConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -52,7 +51,7 @@ public class ItemMovePacket {
     }
 
     public float value() {
-        return Math.min(1f, (Minecraft.getSystemTime() - this.time) /  (float) NEAConfig.moveAnimationTime);
+        return Math.min(1f, (Minecraft.getSystemTime() - this.time) / (float) NEAConfig.moveAnimationTime);
     }
 
     public int getDrawX(float value) {

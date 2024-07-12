@@ -1,15 +1,14 @@
 package com.cleanroommc.neverenoughanimations.core.mixin;
 
-import com.cleanroommc.neverenoughanimations.ItemHoverAnimation;
-import com.cleanroommc.neverenoughanimations.ItemMoveAnimation;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
-import com.cleanroommc.neverenoughanimations.OpeningAnimation;
+import com.cleanroommc.neverenoughanimations.animations.ItemHoverAnimation;
+import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
+import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

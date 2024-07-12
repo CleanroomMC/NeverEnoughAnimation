@@ -1,5 +1,6 @@
-package com.cleanroommc.neverenoughanimations;
+package com.cleanroommc.neverenoughanimations.animations;
 
+import com.cleanroommc.neverenoughanimations.NEAConfig;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;

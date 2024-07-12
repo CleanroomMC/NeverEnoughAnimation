@@ -1,6 +1,6 @@
 package com.cleanroommc.neverenoughanimations.core.mixin;
 
-import com.cleanroommc.neverenoughanimations.HotbarAnimation;
+import com.cleanroommc.neverenoughanimations.animations.HotbarAnimation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiIngame;

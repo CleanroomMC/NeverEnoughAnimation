@@ -1,6 +1,6 @@
 package com.cleanroommc.neverenoughanimations.core.mixin;
 
-import com.cleanroommc.neverenoughanimations.ItemMoveAnimation;
+import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;

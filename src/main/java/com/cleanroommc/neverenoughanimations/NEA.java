@@ -1,5 +1,8 @@
 package com.cleanroommc.neverenoughanimations;
 
+import com.cleanroommc.neverenoughanimations.animations.ItemHoverAnimation;
+import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
+import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
