@@ -2,9 +2,13 @@ package com.cleanroommc.neverenoughanimations;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -16,6 +20,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -23,7 +28,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Tags.MODID, version = Tags.VERSION, name = Tags.MODNAME, acceptedMinecraftVersions = "[1.12.2]")
+@Mod(modid = Tags.MODID, version = Tags.VERSION, name = Tags.MODNAME, acceptedMinecraftVersions = "[1.12.2]", clientSideOnly = true)
 public class NEA {
 
     public static final Logger LOGGER = LogManager.getLogger(Tags.MODID);
@@ -73,6 +78,18 @@ public class NEA {
     public void onConfigChanged(ConfigChangedEvent event) {
         if (event.getModID().equals(Tags.MODID)) {
             ConfigManager.sync(Tags.MODID, Config.Type.INSTANCE);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onGuiOpen(GuiOpenEvent event) {
+        OpeningAnimation.onGuiOpen(event);
+    }
+
+    @SubscribeEvent
+    public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
+        if (event.getGui() instanceof GuiChest chest) {
+            event.getButtonList().add(new GuiButton(95, chest.getGuiLeft() + 150, chest.getGuiTop() + 7, 10, 10, "X"));
         }
     }
 }
