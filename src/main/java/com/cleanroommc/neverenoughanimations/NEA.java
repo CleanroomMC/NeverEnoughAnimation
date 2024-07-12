@@ -27,7 +27,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Tags.MODID, version = Tags.VERSION, name = Tags.MODNAME, acceptedMinecraftVersions = "[1.12.2]", clientSideOnly = true)
+@Mod(modid = Tags.MODID, version = Tags.VERSION, name = Tags.MODNAME,
+        acceptedMinecraftVersions = "[1.12.2]", clientSideOnly = true, dependencies = "required:mixinbooter@[9.1,);")
 public class NEA {
 
     public static final Logger LOGGER = LogManager.getLogger(Tags.MODID);
@@ -68,7 +69,6 @@ public class NEA {
     @SubscribeEvent
     public void onGuiTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) return;
-        GuiScreen current = Minecraft.getMinecraft().currentScreen;
         ItemHoverAnimation.onGuiTick();
     }
 
