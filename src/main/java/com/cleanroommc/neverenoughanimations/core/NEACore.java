@@ -37,6 +37,6 @@ public class NEACore implements IFMLLoadingPlugin, IEarlyMixinLoader {
 
     @Override
     public List<String> getMixinConfigs() {
-        return Collections.singletonList("mixin.nea.json");
+        return Collections.singletonList("mixin.neverenoughanimations.json");
     }
 }
