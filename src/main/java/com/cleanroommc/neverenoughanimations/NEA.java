@@ -81,15 +81,8 @@ public class NEA {
         }
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGH)
+    @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
         OpeningAnimation.onGuiOpen(event);
-    }
-
-    @SubscribeEvent
-    public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
-        if (event.getGui() instanceof GuiChest chest) {
-            event.getButtonList().add(new GuiButton(95, chest.getGuiLeft() + 150, chest.getGuiTop() + 7, 10, 10, "X"));
-        }
     }
 }

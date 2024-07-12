@@ -87,7 +87,7 @@ public class GuiContainerMixin extends GuiScreen {
             GlStateManager.scale(scale, scale, 1f);
             GlStateManager.translate(-xSize / 2f, -ySize / 2f, 0);
             GlStateManager.translate(-guiLeft, -guiTop, 0);
-            GlStateManager.color(1f, 1f, 1f, scale);
+            // GlStateManager.color(1f, 1f, 1f, scale);
         }
     }
 
