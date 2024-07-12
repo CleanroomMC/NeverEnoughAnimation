@@ -187,15 +187,12 @@ public class ItemMoveAnimation {
             List<ItemMovePacket> packets = iter.next();
             for (Iterator<ItemMovePacket> iterator = packets.iterator(); iterator.hasNext(); ) {
                 ItemMovePacket packet = iterator.next();
-                if (!packet.checkEnd()) {
-                    if (packets.size() == 1) {
-                        iter.remove();
-                        break;
-                    }
-                    iterator.remove();
-                    continue;
-                }
+                boolean end = false;
                 float val = packet.value();
+                if (val >= 1f) {
+                    val = 1f;
+                    end = true;
+                }
                 int x = packet.getDrawX(val);
                 int y = packet.getDrawY(val);
                 GlStateManager.translate(0, 0, 32f);
@@ -203,6 +200,14 @@ public class ItemMoveAnimation {
                 if (font == null) font = fontRenderer;
                 itemRender.renderItemAndEffectIntoGUI(Minecraft.getMinecraft().player, packet.getMovingStack(), x, y);
                 itemRender.renderItemOverlayIntoGUI(font, packet.getMovingStack(), x, y, null);
+                if (end) {
+                    ItemMoveAnimation.updateVirtualStack(packet.getTarget().slotNumber, packet.getTargetStack(), -1);
+                    if (packets.size() == 1) {
+                        iter.remove();
+                        break;
+                    }
+                    iterator.remove();
+                }
             }
             if (packets.isEmpty()) iter.remove();
         }
