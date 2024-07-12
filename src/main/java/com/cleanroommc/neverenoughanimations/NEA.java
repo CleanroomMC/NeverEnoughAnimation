@@ -19,7 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Tags.MODID, version = Tags.VERSION, name = Tags.MODNAME,
-        acceptedMinecraftVersions = "[1.12.2]", clientSideOnly = true, dependencies = "required:mixinbooter@[9.1,);")
+        acceptedMinecraftVersions = "[1.12.2]", clientSideOnly = true, dependencies = "required:mixinbooter@[8.8,);")
 public class NEA {
 
     public static final Logger LOGGER = LogManager.getLogger(Tags.MODID);
