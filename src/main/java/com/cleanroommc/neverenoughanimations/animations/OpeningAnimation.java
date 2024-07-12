@@ -7,7 +7,7 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 
 public class OpeningAnimation {
 
-    public static void onGuiOpen(GuiOpenEvent event) {
+    public static boolean onGuiOpen(GuiOpenEvent event) {
         if (event.getGui() instanceof GuiContainer container) {
             if (Minecraft.getMinecraft().currentScreen == null) {
                 animate(container, true);
@@ -15,7 +15,9 @@ public class OpeningAnimation {
         } else if (Minecraft.getMinecraft().currentScreen == lastGui && event.getGui() == null && !shouldCloseLast) {
             animate(lastGui, false);
             event.setCanceled(true);
+            return true;
         }
+        return false;
     }
 
     private static GuiContainer lastGui;
@@ -24,6 +26,7 @@ public class OpeningAnimation {
     private static boolean shouldCloseLast = false;
 
     public static void animate(GuiContainer container, boolean open) {
+        if (NEAConfig.openingAnimationTime == 0 || NEAConfig.isBlacklisted(container)) return;
         animatedGui = container;
         lastGui = container;
         startTime = Minecraft.getSystemTime() * (open ? 1 : -1);

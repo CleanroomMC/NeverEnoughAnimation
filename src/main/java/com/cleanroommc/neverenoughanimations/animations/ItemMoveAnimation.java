@@ -8,12 +8,12 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -39,17 +39,17 @@ public class ItemMoveAnimation {
     private static long lastAnimation = 0;
 
     @ApiStatus.Internal
-    public static void onGuiTick(GuiScreen current) {
+    public static void onGuiOpen(GuiOpenEvent event) {
         if (NEAConfig.moveAnimationTime == 0) return;
-        if (!(current instanceof GuiContainer)) {
+        if (!(event.getGui() instanceof GuiContainer)) {
             if (lastGui != null) {
                 lastGui = null;
                 movingItemsBySource.clear();
             }
             return;
         }
-        if (current != lastGui) {
-            lastGui = (GuiContainer) current;
+        if (!NEAConfig.isBlacklisted(event.getGui())) {
+            lastGui = (GuiContainer) event.getGui();
             movingItemsBySource.clear();
             virtualStacks.clear();
             virtualStacksUser.clear();
@@ -57,7 +57,7 @@ public class ItemMoveAnimation {
     }
 
     public static ItemStack getVirtualStack(GuiContainer container, Slot slot) {
-        return container == lastGui &&
+        return container == lastGui && !NEAConfig.isBlacklisted(container) &&
                 virtualStacks.size() > slot.slotNumber &&
                 virtualStacksUser.getInt(slot.slotNumber) > 0 ?
                 virtualStacks.get(slot.slotNumber) : null;
@@ -86,7 +86,9 @@ public class ItemMoveAnimation {
      */
     @ApiStatus.Internal
     public static Pair<List<Slot>, List<ItemStack>> getCandidates(Slot in, List<Slot> allSlots) {
-        if (NEAConfig.moveAnimationTime == 0 || Minecraft.getSystemTime() - lastAnimation <= 10) return null;
+        if (NEAConfig.moveAnimationTime == 0 ||
+                NEAConfig.isBlacklisted(Minecraft.getMinecraft().currentScreen) ||
+                Minecraft.getSystemTime() - lastAnimation <= 10) return null;
         List<Slot> slots = new ArrayList<>(allSlots.size());
         List<ItemStack> stacks = new ArrayList<>(allSlots.size());
         ItemStack item = in.getStack();

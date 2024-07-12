@@ -69,19 +69,21 @@ public class NEA {
     public void onGuiTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) return;
         GuiScreen current = Minecraft.getMinecraft().currentScreen;
-        ItemHoverAnimation.onGuiTick(current);
-        ItemMoveAnimation.onGuiTick(current);
+        ItemHoverAnimation.onGuiTick();
     }
 
     @SubscribeEvent
     public void onConfigChanged(ConfigChangedEvent event) {
         if (event.getModID().equals(Tags.MODID)) {
+            NEAConfig.blacklistCache.clear();
             ConfigManager.sync(Tags.MODID, Config.Type.INSTANCE);
         }
     }
 
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
-        OpeningAnimation.onGuiOpen(event);
+        if (OpeningAnimation.onGuiOpen(event)) return;
+        ItemHoverAnimation.onGuiOpen(event);
+        ItemMoveAnimation.onGuiOpen(event);
     }
 }
