@@ -10,6 +10,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -32,6 +33,7 @@ import java.awt.*;
 public class NEA {
 
     public static final Logger LOGGER = LogManager.getLogger(Tags.MODID);
+    private static int mouseX, mouseY;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -58,6 +60,20 @@ public class NEA {
         if (OpeningAnimation.onGuiOpen(event)) return;
         ItemHoverAnimation.onGuiOpen(event);
         ItemMoveAnimation.onGuiOpen(event);
+    }
+
+    @SubscribeEvent
+    public void onGuiDraw(GuiScreenEvent.DrawScreenEvent.Pre event) {
+        mouseX = event.getMouseX();
+        mouseY = event.getMouseY();
+    }
+
+    public static int getMouseX() {
+        return mouseX;
+    }
+
+    public static int getMouseY() {
+        return mouseY;
     }
 
     public static void drawScreenDebug(GuiContainer container, int mouseX, int mouseY) {

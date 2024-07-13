@@ -63,27 +63,45 @@ public class ItemMoveAnimation {
 
     public static ItemStack getVirtualStack(GuiContainer container, IItemLocation slot) {
         return container == lastGui && !NEAConfig.isBlacklisted(container) &&
-                virtualStacks.size() > slot.nea$getSlotNumber() &&
-                virtualStacksUser.getInt(slot.nea$getSlotNumber()) > 0 ?
-                virtualStacks.get(slot.nea$getSlotNumber()) : null;
+                virtualStacks.size() > slot.nea$getSlotNumber() + 1 &&
+                virtualStacksUser.getInt(slot.nea$getSlotNumber() + 1) > 0 ?
+                virtualStacks.get(slot.nea$getSlotNumber() + 1) : null;
     }
 
     @ApiStatus.Internal
     public static void updateVirtualStack(int target, ItemStack stack, int op) {
         if (NEAConfig.moveAnimationTime == 0) return;
-        while (target >= virtualStacks.size()) {
+        while (target + 1 >= virtualStacks.size()) {
             // ensure size and default values
             virtualStacks.add(null);
             virtualStacksUser.add(0);
         }
-        int users = virtualStacksUser.getInt(target) + op;
+        int users = virtualStacksUser.getInt(target + 1) + op;
         if (users <= 0) {
             // no users left -> set to null
             stack = null;
             users = 0;
         }
-        virtualStacks.set(target, stack);
-        virtualStacksUser.set(target, users);
+        virtualStacks.set(target + 1, stack);
+        virtualStacksUser.set(target + 1, users);
+    }
+
+    public static void queueAnimation(int slot, ItemMovePacket packet) {
+        List<ItemMovePacket> packets = movingItemsBySource.get(slot + 1);
+        if (packets == null) {
+            packets = new ArrayList<>();
+            movingItemsBySource.put(slot + 1, packets);
+        }
+        packets.add(packet);
+    }
+
+    public static void queueAnimation(int slot, List<ItemMovePacket> packet) {
+        List<ItemMovePacket> packets = movingItemsBySource.get(slot + 1);
+        if (packets == null) {
+            packets = new ArrayList<>();
+            movingItemsBySource.put(slot + 1, packets);
+        }
+        packets.addAll(packet);
     }
 
     /**
@@ -166,11 +184,7 @@ public class ItemMoveAnimation {
             NEA.LOGGER.error("The original stack had {} items, but {} items where moved!", oldSource.getCount(), oldSource.getCount() - total);
         }
         if (error || packets.isEmpty()) return;
-        if (packets.size() == 1) {
-            movingItemsBySource.put(sourceLoc.nea$getSlotNumber(), Collections.singletonList(packets.get(0)));
-        } else {
-            movingItemsBySource.put(sourceLoc.nea$getSlotNumber(), packets);
-        }
+        queueAnimation(sourceLoc.nea$getSlotNumber(), packets);
         for (var iterator = stagedVirtualStacks.int2ObjectEntrySet().fastIterator(); iterator.hasNext(); ) {
             var e = iterator.next();
             updateVirtualStack(e.getIntKey(), e.getValue(), 1);

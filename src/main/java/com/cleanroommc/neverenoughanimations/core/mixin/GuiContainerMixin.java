@@ -17,6 +17,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -99,5 +100,14 @@ public class GuiContainerMixin extends GuiScreen {
             OpeningAnimation.checkGuiToClose();
         }
         NEA.drawScreenDebug((GuiContainer) (Object) this, mouseX, mouseY);
+    }
+
+    @ModifyArg(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiContainer;drawItemStack(Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", ordinal = 0), index = 0)
+    public ItemStack injectVirtualCursorStack(ItemStack stack) {
+        if (NEAConfig.moveAnimationTime > 0) {
+            ItemStack virtual = ItemMoveAnimation.getVirtualStack((GuiContainer) (Object) this, IItemLocation.CURSOR);
+            return virtual == null ? stack : virtual;
+        }
+        return stack;
     }
 }

@@ -1,6 +1,13 @@
 package com.cleanroommc.neverenoughanimations.core.mixin;
 
+import com.cleanroommc.neverenoughanimations.IItemLocation;
+import com.cleanroommc.neverenoughanimations.NEAConfig;
 import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
+import com.cleanroommc.neverenoughanimations.animations.ItemMovePacket;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,6 +21,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
@@ -57,6 +65,36 @@ public abstract class ContainerMixin {
             }
             if (candidates != null) ItemMoveAnimation.handleMove(slot5, oldStack, candidates);
             cir.setReturnValue(itemstack);
+        }
+    }
+
+    @Inject(method = "slotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/InventoryPlayer;getItemStack()Lnet/minecraft/item/ItemStack;", ordinal = 13))
+    public void pickupAllPre(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player,
+                             CallbackInfoReturnable<ItemStack> cir, @Share("cursor") LocalRef<ItemStack> cursor) {
+        cursor.set(player.inventory.getItemStack().copy());
+    }
+
+    @Redirect(method = "slotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;grow(I)V", ordinal = 2))
+    public void pickupAllMid(ItemStack instance, int quantity, @Share("packets") LocalRef<Int2ObjectArrayMap<ItemMovePacket>> packets, @Local(ordinal = 1) Slot slot) {
+        if (NEAConfig.moveAnimationTime == 0) return;
+        if (packets.get() == null) packets.set(new Int2ObjectArrayMap<>());
+        IItemLocation source = IItemLocation.of(slot);
+        ItemStack movingStack = instance.copy();
+        movingStack.setCount(quantity);
+        packets.get().put(source.nea$getSlotNumber(), new ItemMovePacket(Minecraft.getSystemTime(), source, IItemLocation.CURSOR, movingStack));
+        instance.grow(quantity);
+    }
+
+    @Inject(method = "slotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Container;detectAndSendChanges()V"))
+    public void pickupAllPost(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player,
+                              CallbackInfoReturnable<ItemStack> cir, @Share("packets") LocalRef<Int2ObjectArrayMap<ItemMovePacket>> packets,
+                              @Share("cursor") LocalRef<ItemStack> cursor) {
+        if (packets.get() != null && !packets.get().isEmpty()) {
+            for (var iterator = packets.get().int2ObjectEntrySet().fastIterator(); iterator.hasNext(); ) {
+                var e = iterator.next();
+                ItemMoveAnimation.queueAnimation(e.getIntKey(), e.getValue());
+                ItemMoveAnimation.updateVirtualStack(-1, cursor.get(), 1);
+            }
         }
     }
 }
