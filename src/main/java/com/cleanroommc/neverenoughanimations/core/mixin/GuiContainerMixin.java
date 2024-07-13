@@ -97,7 +97,6 @@ public class GuiContainerMixin extends GuiScreen {
     public void endOpeningAnimation(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if (NEAConfig.openingAnimationTime > 0) {
             GlStateManager.popMatrix();
-            OpeningAnimation.checkGuiToClose();
         }
         NEA.drawScreenDebug((GuiContainer) (Object) this, mouseX, mouseY);
     }

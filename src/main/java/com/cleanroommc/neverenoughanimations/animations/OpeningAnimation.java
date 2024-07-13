@@ -33,6 +33,7 @@ public class OpeningAnimation {
     }
 
     public static float getScale(GuiContainer container) {
+        if (shouldCloseLast) return 0.001f;
         if (animatedGui != container) return 1f;
         float val = (Minecraft.getSystemTime() - Math.abs(startTime)) / (float) NEAConfig.openingAnimationTime;
         float min = 0.75f, max = 1f;

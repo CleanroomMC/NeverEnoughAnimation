@@ -43,6 +43,7 @@ public class NEA {
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onGuiTick(TickEvent.ClientTickEvent event) {
+        OpeningAnimation.checkGuiToClose();
         if (event.phase == TickEvent.Phase.END) return;
         ItemHoverAnimation.onGuiTick();
     }
