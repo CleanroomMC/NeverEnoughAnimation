@@ -1,9 +1,12 @@
 package com.cleanroommc.neverenoughanimations.core.mixin;
 
 import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
@@ -34,6 +37,11 @@ public abstract class ContainerMixin {
                 return;
             }
 
+            Container c = (Container) (Object) this;
+            // creative gui does stuff very differently
+            List<Slot> inventorySlots = c instanceof ContainerPlayer &&
+                    Minecraft.getMinecraft().currentScreen instanceof GuiContainerCreative gui ?
+                    gui.inventorySlots.inventorySlots : this.inventorySlots;
             Slot slot5 = inventorySlots.get(slotId);
 
             if (slot5 == null || !slot5.canTakeStack(player) || !slot5.getHasStack()) {

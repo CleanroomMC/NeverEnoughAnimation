@@ -1,5 +1,6 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
+import com.cleanroommc.neverenoughanimations.IItemLocation;
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -57,10 +58,14 @@ public class ItemMoveAnimation {
     }
 
     public static ItemStack getVirtualStack(GuiContainer container, Slot slot) {
+        return getVirtualStack(container, IItemLocation.of(slot));
+    }
+
+    public static ItemStack getVirtualStack(GuiContainer container, IItemLocation slot) {
         return container == lastGui && !NEAConfig.isBlacklisted(container) &&
-                virtualStacks.size() > slot.slotNumber &&
-                virtualStacksUser.getInt(slot.slotNumber) > 0 ?
-                virtualStacks.get(slot.slotNumber) : null;
+                virtualStacks.size() > slot.nea$getSlotNumber() &&
+                virtualStacksUser.getInt(slot.nea$getSlotNumber()) > 0 ?
+                virtualStacks.get(slot.nea$getSlotNumber()) : null;
     }
 
     @ApiStatus.Internal
@@ -91,7 +96,7 @@ public class ItemMoveAnimation {
                 Minecraft.getSystemTime() - lastAnimation <= 10) return null;
         List<Slot> slots = new ArrayList<>(allSlots.size());
         List<ItemStack> stacks = new ArrayList<>(allSlots.size());
-        ItemStack item = in.getStack();
+        ItemStack item = IItemLocation.of(in).nea$getStack();
         for (Slot slot : allSlots) {
             if (in == slot) continue;
             ItemStack other = slot.getStack();
@@ -111,6 +116,7 @@ public class ItemMoveAnimation {
      */
     @ApiStatus.Internal
     public static void handleMove(Slot source, ItemStack oldSource, Pair<List<Slot>, List<ItemStack>> candidates) {
+        IItemLocation sourceLoc = IItemLocation.of(source);
         List<Slot> slots = candidates.getLeft();
         List<ItemStack> stacks = candidates.getRight();
         // total amount of moved items
@@ -121,18 +127,18 @@ public class ItemMoveAnimation {
         boolean error = false;
         long time = Minecraft.getSystemTime();
         for (int i = 0; i < slots.size(); i++) {
-            Slot slot = slots.get(i);
-            if (slot == source) continue;
+            IItemLocation slot = IItemLocation.of(slots.get(i));
+            if (slot == sourceLoc) continue;
             ItemStack oldStack = stacks.get(i);
-            ItemStack newStack = slot.getStack();
+            ItemStack newStack = slot.nea$getStack();
             if (oldStack.isEmpty()) {
                 // was empty
                 if (!newStack.isEmpty()) {
                     // now it's not empty -> found
-                    ItemMovePacket packet = new ItemMovePacket(time, source, slot, newStack.copy());
+                    ItemMovePacket packet = new ItemMovePacket(time, sourceLoc, slot, newStack.copy());
                     packets.add(packet);
                     total -= newStack.getCount();
-                    stagedVirtualStacks.put(slot.slotNumber, oldStack);
+                    stagedVirtualStacks.put(slot.nea$getSlotNumber(), oldStack);
                 }
             } else if (ItemHandlerHelper.canItemStacksStack(newStack, oldStack)) {
                 // the stackable check is not really necessary but is still here for safety
@@ -140,18 +146,18 @@ public class ItemMoveAnimation {
                     // stackable and amount changed -> found
                     ItemStack movingStack = newStack.copy();
                     movingStack.shrink(oldStack.getCount());
-                    ItemMovePacket packet = new ItemMovePacket(time, source, slot, movingStack);
+                    ItemMovePacket packet = new ItemMovePacket(time, sourceLoc, slot, movingStack);
                     packets.add(packet);
                     total -= movingStack.getCount();
-                    stagedVirtualStacks.put(slot.slotNumber, oldStack);
+                    stagedVirtualStacks.put(slot.nea$getSlotNumber(), oldStack);
                 } else if (oldStack.getCount() > newStack.getCount()) {
                     // what
-                    NEA.LOGGER.error("After shift clicking a target slot ({}) now has less items than before!", slot.slotNumber);
+                    NEA.LOGGER.error("After shift clicking a target slot ({}) now has less items than before!", slot.nea$getSlotNumber());
                     error = true;
                 }
             } else {
                 // what
-                NEA.LOGGER.error("After shift clicking a target slot ({}) now has a different item than before!", slot.slotNumber);
+                NEA.LOGGER.error("After shift clicking a target slot ({}) now has a different item than before!", slot.nea$getSlotNumber());
                 error = true;
             }
             if (total <= 0) break;
@@ -161,9 +167,9 @@ public class ItemMoveAnimation {
         }
         if (error || packets.isEmpty()) return;
         if (packets.size() == 1) {
-            movingItemsBySource.put(source.slotNumber, Collections.singletonList(packets.get(0)));
+            movingItemsBySource.put(sourceLoc.nea$getSlotNumber(), Collections.singletonList(packets.get(0)));
         } else {
-            movingItemsBySource.put(source.slotNumber, packets);
+            movingItemsBySource.put(sourceLoc.nea$getSlotNumber(), packets);
         }
         for (var iterator = stagedVirtualStacks.int2ObjectEntrySet().fastIterator(); iterator.hasNext(); ) {
             var e = iterator.next();
@@ -201,7 +207,7 @@ public class ItemMoveAnimation {
                 itemRender.renderItemAndEffectIntoGUI(Minecraft.getMinecraft().player, packet.getMovingStack(), x, y);
                 itemRender.renderItemOverlayIntoGUI(font, packet.getMovingStack(), x, y, null);
                 if (end) {
-                    ItemMoveAnimation.updateVirtualStack(packet.getTarget().slotNumber, packet.getTargetStack(), -1);
+                    ItemMoveAnimation.updateVirtualStack(packet.getTarget().nea$getSlotNumber(), packet.getTargetStack(), -1);
                     if (packets.size() == 1) {
                         iter.remove();
                         break;

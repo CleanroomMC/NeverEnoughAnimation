@@ -1,22 +1,22 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
+import com.cleanroommc.neverenoughanimations.IItemLocation;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 public class ItemMovePacket {
 
     private final long time;
-    private final Slot source, target;
+    private final IItemLocation source, target;
     private final ItemStack movingStack;
     private final ItemStack targetStack;
 
-    public ItemMovePacket(long time, Slot source, Slot target, ItemStack movingStack) {
+    public ItemMovePacket(long time, IItemLocation source, IItemLocation target, ItemStack movingStack) {
         this.time = time;
         this.source = source;
         this.target = target;
-        this.targetStack = target.getStack().copy();
+        this.targetStack = target.nea$getStack().copy();
         this.movingStack = movingStack;
     }
 
@@ -32,11 +32,11 @@ public class ItemMovePacket {
         return targetStack;
     }
 
-    public Slot getSource() {
+    public IItemLocation getSource() {
         return source;
     }
 
-    public Slot getTarget() {
+    public IItemLocation getTarget() {
         return target;
     }
 
@@ -45,10 +45,10 @@ public class ItemMovePacket {
     }
 
     public int getDrawX(float value) {
-        return (int) NEAConfig.moveAnimationCurve.interpolate(source.xPos, target.xPos, value);
+        return (int) NEAConfig.moveAnimationCurve.interpolate(source.nea$getX(), target.nea$getX(), value);
     }
 
     public int getDrawY(float value) {
-        return (int) NEAConfig.moveAnimationCurve.interpolate(source.yPos, target.yPos, value);
+        return (int) NEAConfig.moveAnimationCurve.interpolate(source.nea$getY(), target.nea$getY(), value);
     }
 }

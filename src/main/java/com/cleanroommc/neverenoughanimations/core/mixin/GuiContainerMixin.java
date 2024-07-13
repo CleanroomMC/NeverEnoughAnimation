@@ -1,5 +1,7 @@
 package com.cleanroommc.neverenoughanimations.core.mixin;
 
+import com.cleanroommc.neverenoughanimations.IItemLocation;
+import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import com.cleanroommc.neverenoughanimations.animations.ItemHoverAnimation;
 import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
@@ -43,7 +45,7 @@ public class GuiContainerMixin extends GuiScreen {
     public void injectHoverScale(Slot slotIn, CallbackInfo ci) {
         if (NEAConfig.hoverAnimationTime > 0) {
             GlStateManager.pushMatrix();
-            float scale = ItemHoverAnimation.getRenderScale((GuiContainer) (Object) this, slotIn.slotNumber);
+            float scale = ItemHoverAnimation.getRenderScale((GuiContainer) (Object) this, IItemLocation.of(slotIn).nea$getSlotNumber());
             if (scale > 1f) {
                 int x = slotIn.xPos;
                 int y = slotIn.yPos;
@@ -96,5 +98,6 @@ public class GuiContainerMixin extends GuiScreen {
             GlStateManager.popMatrix();
             OpeningAnimation.checkGuiToClose();
         }
+        NEA.drawScreenDebug((GuiContainer) (Object) this, mouseX, mouseY);
     }
 }
