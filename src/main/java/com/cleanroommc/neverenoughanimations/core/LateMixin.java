@@ -11,7 +11,8 @@ import java.util.stream.Collectors;
 public class LateMixin implements ILateMixinLoader {
 
     private static final String[] mods = {
-            "trashslot"
+            "trashslot",
+            "jei"
     };
 
     @Override
