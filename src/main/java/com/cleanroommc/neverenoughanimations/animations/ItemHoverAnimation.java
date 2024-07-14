@@ -1,10 +1,10 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
-import com.cleanroommc.neverenoughanimations.IItemLocation;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
-import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Slot;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -14,8 +14,8 @@ import org.jetbrains.annotations.ApiStatus;
 public class ItemHoverAnimation {
 
     private static GuiContainer lastHoveredGui = null;
-    private static int lastHoveredSlot = -1;
-    private static final LongArrayList hoveredSlots = new LongArrayList(256);
+    private static Slot lastHoveredSlot = null;
+    private static final Object2LongOpenHashMap<Slot> hoveredSlots = new Object2LongOpenHashMap<>(32);
 
     @ApiStatus.Internal
     public static void onGuiOpen(GuiOpenEvent event) {
@@ -23,52 +23,48 @@ public class ItemHoverAnimation {
             if (!(event.getGui() instanceof GuiContainer)) {
                 if (lastHoveredGui != null) {
                     lastHoveredGui = null;
-                    lastHoveredSlot = -1;
+                    lastHoveredSlot = null;
                     hoveredSlots.clear();
                 }
                 return;
             }
             if (!NEAConfig.isBlacklisted(event.getGui())) {
                 lastHoveredGui = (GuiContainer) event.getGui();
-                lastHoveredSlot = -1;
+                lastHoveredSlot = null;
                 hoveredSlots.clear();
             }
         }
     }
 
-    private static void startAnimation(int slot, boolean grow) {
-        while (hoveredSlots.size() <= slot) {
-            hoveredSlots.add(0);
-        }
-        hoveredSlots.set(slot, Minecraft.getSystemTime() * (grow ? 1 : -1));
+    private static void startAnimation(Slot slot, boolean grow) {
+        hoveredSlots.put(slot, Minecraft.getSystemTime() * (grow ? 1 : -1));
     }
 
-    public static boolean isAnimating(int slot) {
-        return hoveredSlots.size() > slot && hoveredSlots.getLong(slot) != 0;
+    public static boolean isAnimating(Slot slot) {
+        return hoveredSlots.containsKey(slot);
     }
 
     @ApiStatus.Internal
     public static void onGuiTick() {
         if (NEAConfig.hoverAnimationTime == 0 || lastHoveredGui == null) return;
-        IItemLocation hoveredSlot = IItemLocation.of(lastHoveredGui.getSlotUnderMouse());
-        if (lastHoveredSlot >= 0 && (hoveredSlot == null || hoveredSlot.nea$getSlotNumber() != lastHoveredSlot)) {
+        Slot hoveredSlot = lastHoveredGui.getSlotUnderMouse();
+        if (lastHoveredSlot != null && (hoveredSlot == null || hoveredSlot != lastHoveredSlot)) {
             // last slot is no longer hovered
             startAnimation(lastHoveredSlot, false);
         }
         if (hoveredSlot != null) {
-            lastHoveredSlot = hoveredSlot.nea$getSlotNumber();
-            if (!isAnimating(hoveredSlot.nea$getSlotNumber())) {
+            lastHoveredSlot = hoveredSlot;
+            if (!isAnimating(hoveredSlot)) {
                 // started hovering
-                startAnimation(hoveredSlot.nea$getSlotNumber(), true);
+                startAnimation(hoveredSlot, true);
             }
         } else {
-            lastHoveredSlot = -1;
+            lastHoveredSlot = null;
         }
     }
 
-    public static float getRenderScale(GuiContainer gui, int slot) {
+    public static float getRenderScale(GuiContainer gui, Slot slot) {
         if (lastHoveredGui != gui ||
-                slot >= hoveredSlots.size() ||
                 !isAnimating(slot) ||
                 NEAConfig.isBlacklisted(gui)) return 1f;
         float min = 1f, max = 1.25f;
@@ -79,7 +75,7 @@ public class ItemHoverAnimation {
             val = 1f - val;
             if (val <= 0) {
                 // animation ended
-                hoveredSlots.set(slot, 0);
+                hoveredSlots.removeLong(slot);
                 return 1f;
             }
         } else if (val >= 1f) {

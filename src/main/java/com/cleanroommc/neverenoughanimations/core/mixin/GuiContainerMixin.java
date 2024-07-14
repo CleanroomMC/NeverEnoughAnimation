@@ -35,7 +35,7 @@ public class GuiContainerMixin extends GuiScreen {
     public void injectHoverScale(Slot slotIn, CallbackInfo ci) {
         if (NEAConfig.hoverAnimationTime > 0) {
             GlStateManager.pushMatrix();
-            float scale = ItemHoverAnimation.getRenderScale((GuiContainer) (Object) this, IItemLocation.of(slotIn).nea$getSlotNumber());
+            float scale = ItemHoverAnimation.getRenderScale((GuiContainer) (Object) this, slotIn);
             if (scale > 1f) {
                 int x = slotIn.xPos;
                 int y = slotIn.yPos;
