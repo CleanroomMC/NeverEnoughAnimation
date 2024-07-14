@@ -3,6 +3,7 @@ package com.cleanroommc.neverenoughanimations.animations;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.client.event.GuiOpenEvent;
 
 public class OpeningAnimation {
@@ -50,6 +51,18 @@ public class OpeningAnimation {
         }
 
         return NEAConfig.openingAnimationCurve.interpolate(min, max, val);
+    }
+
+    public static boolean handleScale(GuiContainer container, boolean translateToPanel) {
+        float scale = getScale(container);
+        if (scale == 1 || NEAConfig.moveAnimationTime == 0) return false;
+        if (translateToPanel) GlStateManager.translate(container.getGuiLeft(), container.getGuiTop(), 0);
+        GlStateManager.translate(container.getXSize() / 2f, container.getYSize() / 2f, 0);
+        GlStateManager.scale(scale, scale, 1f);
+        GlStateManager.translate(-container.getXSize() / 2f, -container.getYSize() / 2f, 0);
+        if (translateToPanel) GlStateManager.translate(-container.getGuiLeft(), -container.getGuiTop(), 0);
+        // GlStateManager.color(1f, 1f, 1f, scale);
+        return true;
     }
 
     public static void checkGuiToClose() {

@@ -1,11 +1,9 @@
 package com.cleanroommc.neverenoughanimations.core.mixin;
 
 import com.cleanroommc.neverenoughanimations.IItemLocation;
-import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import com.cleanroommc.neverenoughanimations.animations.ItemHoverAnimation;
 import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
-import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.minecraft.client.gui.GuiScreen;
@@ -14,7 +12,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -23,14 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiContainer.class)
 public class GuiContainerMixin extends GuiScreen {
-
-    @Shadow protected int xSize;
-
-    @Shadow protected int ySize;
-
-    @Shadow protected int guiLeft;
-
-    @Shadow protected int guiTop;
 
     @Inject(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 5, shift = At.Shift.BEFORE))
     public void injectVirtualStack(Slot slotIn, CallbackInfo ci, @Local(ordinal = 0) LocalRef<ItemStack> itemStack) {
@@ -77,28 +66,6 @@ public class GuiContainerMixin extends GuiScreen {
         ItemMoveAnimation.drawAnimations(itemRender, fontRenderer);
         itemRender.zLevel = 0;
         zLevel = 0;
-    }
-
-    @Inject(method = "drawScreen", at = @At(value = "HEAD"))
-    public void drawOpeningAnimation(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if (NEAConfig.openingAnimationTime > 0) {
-            float scale = OpeningAnimation.getScale((GuiContainer) (Object) this);
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(guiLeft, guiTop, 0);
-            GlStateManager.translate(xSize / 2f, ySize / 2f, 0);
-            GlStateManager.scale(scale, scale, 1f);
-            GlStateManager.translate(-xSize / 2f, -ySize / 2f, 0);
-            GlStateManager.translate(-guiLeft, -guiTop, 0);
-            // GlStateManager.color(1f, 1f, 1f, scale);
-        }
-    }
-
-    @Inject(method = "drawScreen", at = @At("TAIL"))
-    public void endOpeningAnimation(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if (NEAConfig.openingAnimationTime > 0) {
-            GlStateManager.popMatrix();
-        }
-        NEA.drawScreenDebug((GuiContainer) (Object) this, mouseX, mouseY);
     }
 
     @ModifyArg(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiContainer;drawItemStack(Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", ordinal = 0), index = 0)

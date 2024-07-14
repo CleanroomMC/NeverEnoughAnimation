@@ -18,11 +18,10 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,7 +39,6 @@ public class NEA {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onGuiTick(TickEvent.ClientTickEvent event) {
         OpeningAnimation.checkGuiToClose();
@@ -63,10 +61,35 @@ public class NEA {
         ItemMoveAnimation.onGuiOpen(event);
     }
 
-    @SubscribeEvent
-    public void onGuiDraw(GuiScreenEvent.DrawScreenEvent.Pre event) {
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
+    public void onGuiDrawPre(GuiScreenEvent.DrawScreenEvent.Pre event) {
         mouseX = event.getMouseX();
         mouseY = event.getMouseY();
+        if (NEAConfig.moveAnimationTime > 0 && event.getGui() instanceof GuiContainer) {
+            GlStateManager.pushMatrix();
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onGuiDrawPost(GuiScreenEvent.DrawScreenEvent.Post event) {
+        if (NEAConfig.moveAnimationTime > 0 && event.getGui() instanceof GuiContainer container) {
+            GlStateManager.popMatrix();
+            OpeningAnimation.getScale(container); // make sure screens don't get stuck in case they don't render the scale
+        }
+    }
+
+    @SubscribeEvent
+    public void drawDebugInfo(GuiScreenEvent.BackgroundDrawnEvent event) {
+        if (event.getGui() instanceof GuiContainer container) {
+            drawScreenDebug(container, event.getMouseX(), event.getMouseY());
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onGuiBackgroundDrawn(GuiScreenEvent.BackgroundDrawnEvent event) {
+        if (NEAConfig.moveAnimationTime > 0 && event.getGui() instanceof GuiContainer container) {
+            OpeningAnimation.handleScale(container, true);
+        }
     }
 
     public static int getMouseX() {
