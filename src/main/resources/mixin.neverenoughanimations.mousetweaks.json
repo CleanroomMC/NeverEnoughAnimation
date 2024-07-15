@@ -1,0 +1,12 @@
+{
+  "package": "com.cleanroommc.neverenoughanimations.core.mixin.mousetweaks",
+  "refmap": "mixins.neverenoughanimations.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+  ],
+  "mixins": [
+    "MainMixin"
+  ]
+}

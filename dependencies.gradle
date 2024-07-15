@@ -38,5 +38,6 @@
  * For more details, see https://docs.gradle.org/8.4/userguide/java_library_plugin.html#sec:java_library_configurations_graph
  */
 dependencies {
+    devOnlyNonPublishable rfg.deobf("curse.maven:mouse_tweaks_unofficial-461660:4661407")
     devOnlyNonPublishable rfg.deobf("curse.maven:trashslot-235577:2722385")
 }

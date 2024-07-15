@@ -12,7 +12,8 @@ public class LateMixin implements ILateMixinLoader {
 
     private static final String[] mods = {
             "trashslot",
-            "jei"
+            "jei",
+            "mousetweaks"
     };
 
     @Override
