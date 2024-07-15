@@ -122,14 +122,14 @@ public abstract class ContainerMixin {
         IItemLocation slot = IItemLocation.of(this.inventorySlots.get(slotId));
         if (slot.nea$getStack().isEmpty()) {
             // only animate when shift is held (throw hole stack) or only one item is left
-            ItemPickupThrowAnimation.animateRemove(slot.nea$getX(), slot.nea$getY(), throwing.get(), false);
+            ItemPickupThrowAnimation.animate(slot.nea$getX(), slot.nea$getY(), throwing.get(), false);
         }
     }
 
     @ModifyArg(method = "slotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/item/EntityItem;"))
-    public ItemStack animateThrow(ItemStack itemStackIn, @Local(ordinal = 0) int slot) {
+    public ItemStack animateThrow(ItemStack itemStackIn, @Local(ordinal = 0, argsOnly = true) int slot) {
         if (slot == -999) {
-            ItemPickupThrowAnimation.animateRemove(NEA.getMouseX() - 8, NEA.getMouseY() - 8, itemStackIn.copy(), true);
+            ItemPickupThrowAnimation.animate(NEA.getMouseX() - 8, NEA.getMouseY() - 8, itemStackIn.copy(), true);
         }
         return itemStackIn;
     }

@@ -1,6 +1,7 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
 import com.cleanroommc.neverenoughanimations.IItemLocation;
+import com.cleanroommc.neverenoughanimations.NEAConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
@@ -21,6 +22,7 @@ public class SwapHolder {
     private ItemStack hotbarStack;
 
     public boolean init(Slot hoveredSlot, List<Slot> slots, int hotbarIndex) {
+        if (NEAConfig.isBlacklisted(Minecraft.getMinecraft().currentScreen)) return false;
         this.targetSlot = hoveredSlot;
         this.hotbarSlot = findHotbarSlot(slots, hotbarIndex);
         if (this.hotbarSlot == null) {
