@@ -4,6 +4,7 @@ import com.cleanroommc.neverenoughanimations.IItemLocation;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
 import com.cleanroommc.neverenoughanimations.animations.ItemMovePacket;
+import com.cleanroommc.neverenoughanimations.animations.SwapHolder;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
@@ -37,7 +38,8 @@ public abstract class ContainerMixin {
     public abstract ItemStack transferStackInSlot(EntityPlayer playerIn, int index);
 
     @Inject(method = "slotClick", at = @At("HEAD"), cancellable = true)
-    public void slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir) {
+    public void slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir,
+                          @Share("swapHolder") LocalRef<SwapHolder> swapHolder) {
         if (player == null || player.world == null || !player.world.isRemote) return;
         if (clickTypeIn == ClickType.QUICK_MOVE && (dragType == 0 || dragType == 1) && dragEvent == 0 && slotId != -999) {
             if (slotId < 0) {
@@ -65,6 +67,19 @@ public abstract class ContainerMixin {
             }
             if (candidates != null) ItemMoveAnimation.handleMove(slot5, oldStack, candidates);
             cir.setReturnValue(itemstack);
+        } else if (clickTypeIn == ClickType.SWAP && dragType >= 0 && dragType < 9) {
+            Slot targetSlot = this.inventorySlots.get(slotId);
+            if (SwapHolder.INSTANCE.init(targetSlot, this.inventorySlots, dragType)) {
+                swapHolder.set(SwapHolder.INSTANCE);
+            }
+        }
+    }
+
+    @Inject(method = "slotClick", at = @At("TAIL"))
+    public void slotClickPost(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir,
+                              @Share("swapHolder") LocalRef<SwapHolder> swapHolder) {
+        if (swapHolder.get() != null) {
+            swapHolder.get().performSwap();
         }
     }
 
