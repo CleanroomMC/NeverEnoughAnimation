@@ -1,9 +1,11 @@
 package com.cleanroommc.neverenoughanimations.core.mixin;
 
 import com.cleanroommc.neverenoughanimations.IItemLocation;
+import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
 import com.cleanroommc.neverenoughanimations.animations.ItemMovePacket;
+import com.cleanroommc.neverenoughanimations.animations.ItemPickupThrowAnimation;
 import com.cleanroommc.neverenoughanimations.animations.SwapHolder;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
@@ -22,6 +24,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -111,5 +114,23 @@ public abstract class ContainerMixin {
                 ItemMoveAnimation.updateVirtualStack(-1, cursor.get(), 1);
             }
         }
+    }
+
+    @Inject(method = "slotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/item/EntityItem;", ordinal = 3))
+    public void throwItem(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player,
+                          CallbackInfoReturnable<ItemStack> cir, @Local(ordinal = 1) LocalRef<ItemStack> throwing) {
+        IItemLocation slot = IItemLocation.of(this.inventorySlots.get(slotId));
+        if (slot.nea$getStack().isEmpty()) {
+            // only animate when shift is held (throw hole stack) or only one item is left
+            ItemPickupThrowAnimation.animateRemove(slot.nea$getX(), slot.nea$getY(), throwing.get(), false);
+        }
+    }
+
+    @ModifyArg(method = "slotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/item/EntityItem;"))
+    public ItemStack animateThrow(ItemStack itemStackIn, @Local(ordinal = 0) int slot) {
+        if (slot == -999) {
+            ItemPickupThrowAnimation.animateRemove(NEA.getMouseX() - 8, NEA.getMouseY() - 8, itemStackIn.copy(), true);
+        }
+        return itemStackIn;
     }
 }

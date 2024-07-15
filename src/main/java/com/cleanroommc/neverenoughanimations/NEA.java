@@ -2,6 +2,7 @@ package com.cleanroommc.neverenoughanimations;
 
 import com.cleanroommc.neverenoughanimations.animations.ItemHoverAnimation;
 import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
+import com.cleanroommc.neverenoughanimations.animations.ItemPickupThrowAnimation;
 import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -59,6 +60,7 @@ public class NEA {
         if (OpeningAnimation.onGuiOpen(event)) return;
         ItemHoverAnimation.onGuiOpen(event);
         ItemMoveAnimation.onGuiOpen(event);
+        ItemPickupThrowAnimation.onGuiOpen(event);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)

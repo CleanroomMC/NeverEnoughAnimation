@@ -49,4 +49,42 @@ public interface IItemLocation {
             return Minecraft.getMinecraft().player.inventory.getItemStack();
         }
     };
+
+    class Impl implements IItemLocation {
+
+        private final int x, y;
+        private final int slotNumber;
+        private final ItemStack stack;
+
+        public Impl(int x, int y, ItemStack stack) {
+            this(x, y, -2, stack);
+        }
+
+        public Impl(int x, int y, int slotNumber, ItemStack stack) {
+            this.x = x;
+            this.y = y;
+            this.slotNumber = slotNumber;
+            this.stack = stack;
+        }
+
+        @Override
+        public int nea$getX() {
+            return x;
+        }
+
+        @Override
+        public int nea$getY() {
+            return y;
+        }
+
+        @Override
+        public int nea$getSlotNumber() {
+            return slotNumber;
+        }
+
+        @Override
+        public ItemStack nea$getStack() {
+            return stack;
+        }
+    }
 }

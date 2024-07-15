@@ -4,6 +4,7 @@ import com.cleanroommc.neverenoughanimations.IItemLocation;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import com.cleanroommc.neverenoughanimations.animations.ItemHoverAnimation;
 import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
+import com.cleanroommc.neverenoughanimations.animations.ItemPickupThrowAnimation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import net.minecraft.client.gui.GuiScreen;
@@ -63,6 +64,7 @@ public class GuiContainerMixin extends GuiScreen {
     public void drawMovingItems(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         zLevel = 200;
         itemRender.zLevel = 200;
+        ItemPickupThrowAnimation.drawIndependentAnimations((GuiContainer) (Object) this, itemRender, fontRenderer);
         ItemMoveAnimation.drawAnimations(itemRender, fontRenderer);
         itemRender.zLevel = 0;
         zLevel = 0;

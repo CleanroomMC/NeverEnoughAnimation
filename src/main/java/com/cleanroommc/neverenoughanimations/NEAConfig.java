@@ -20,13 +20,21 @@ public class NEAConfig {
     @Config.Comment("If the gray slot overlay (minecraft feature) should be rendered at all on hover. Default: false")
     public static boolean itemHoverOverlay = false;
 
-    @Config.Name("Move animation time")
+    @Config.Name("Item move animation time")
     @Config.SlidingOption
     @Config.RangeInt(min = 0, max = 1000)
     @Config.Comment("How many millieseconds it takes until an item has moved to its target (activated on shift click). 0 to disable.")
     public static int moveAnimationTime = 200;
-    @Config.Name("Move animation easing curve")
+    @Config.Name("Item move animation easing curve")
     public static Interpolation moveAnimationCurve = Interpolation.SINE_OUT;
+
+    @Config.Name("Item (dis)appear animation time")
+    @Config.SlidingOption
+    @Config.RangeInt(min = 0, max = 1000)
+    @Config.Comment("How many millieseconds it takes until an item has moved to its target (activated on shift click). 0 to disable.")
+    public static int appearAnimationTime = 150;
+    @Config.Name("Item (dis)appear animation easing curve")
+    public static Interpolation appearAnimationCurve = Interpolation.SINE_OUT;
 
     @Config.Name("Hotbar animation time")
     @Config.SlidingOption
