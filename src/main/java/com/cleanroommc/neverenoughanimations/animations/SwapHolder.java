@@ -41,6 +41,10 @@ public class SwapHolder {
     }
 
     public void performSwap() {
+        if (this.hotbarSlot == null || this.targetSlot == null || this.hotbarStack == null || this.targetStack == null) {
+            reset();
+            return;
+        }
         IItemLocation hotbar = IItemLocation.of(this.hotbarSlot);
         IItemLocation hovering = IItemLocation.of(this.targetSlot);
         long time = Minecraft.getSystemTime();

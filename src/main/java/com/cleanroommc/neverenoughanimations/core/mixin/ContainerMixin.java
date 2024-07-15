@@ -71,6 +71,8 @@ public abstract class ContainerMixin {
             if (candidates != null) ItemMoveAnimation.handleMove(slot5, oldStack, candidates);
             cir.setReturnValue(itemstack);
         } else if (clickTypeIn == ClickType.SWAP && dragType >= 0 && dragType < 9) {
+            // fuck creative inventory
+            if ((Object) this instanceof GuiContainerCreative.ContainerCreative) return;
             Slot targetSlot = this.inventorySlots.get(slotId);
             if (SwapHolder.INSTANCE.init(targetSlot, this.inventorySlots, dragType)) {
                 swapHolder.set(SwapHolder.INSTANCE);
