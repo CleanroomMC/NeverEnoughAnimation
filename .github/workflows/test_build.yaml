@@ -57,5 +57,5 @@ jobs:
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4.3.4
       with:
-        name: GroovyScript-${{ steps.gradle_properties.outputs.modVersion }}-${{ github.run_number }}
+        name: NeverEnoughAnimation-${{ steps.gradle_properties.outputs.modVersion }}-${{ github.run_number }}
         path: build/libs/*[!-sources][!-dev].jar
