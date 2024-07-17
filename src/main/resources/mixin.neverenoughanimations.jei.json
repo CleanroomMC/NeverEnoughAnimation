@@ -5,9 +5,9 @@
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "client": [
-  ],
-  "mixins": [
     "IngredientListOverlayMixin",
     "LeftAreaDispatcherMixin"
+  ],
+  "mixins": [
   ]
 }

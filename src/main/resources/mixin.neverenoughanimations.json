@@ -7,11 +7,11 @@
   "client": [
     "CreativeSlotMixin",
     "GuiContainerMixin",
-    "GuiIngameMixin"
-  ],
-  "mixins": [
+    "GuiIngameMixin",
     "ContainerMixin",
     "InventoryPlayerMixin",
     "SlotMixin"
+  ],
+  "mixins": [
   ]
 }
