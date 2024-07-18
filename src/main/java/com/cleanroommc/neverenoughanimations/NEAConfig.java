@@ -12,7 +12,7 @@ public class NEAConfig {
     @Config.SlidingOption
     @Config.RangeInt(min = 0, max = 1000)
     @Config.Comment("How many millieseconds it takes until an item is scaled to its full size on hover. 0 to disable.")
-    public static int hoverAnimationTime = 150;
+    public static int hoverAnimationTime = 100;
     @Config.Name("Hover animation easing curve")
     public static Interpolation hoverAnimationCurve = Interpolation.QUAD_INOUT;
 
@@ -24,7 +24,7 @@ public class NEAConfig {
     @Config.SlidingOption
     @Config.RangeInt(min = 0, max = 1000)
     @Config.Comment("How many millieseconds it takes until an item has moved to its target (activated on shift click). 0 to disable.")
-    public static int moveAnimationTime = 200;
+    public static int moveAnimationTime = 100;
     @Config.Name("Item move animation easing curve")
     public static Interpolation moveAnimationCurve = Interpolation.SINE_OUT;
 
@@ -32,7 +32,7 @@ public class NEAConfig {
     @Config.SlidingOption
     @Config.RangeInt(min = 0, max = 1000)
     @Config.Comment("How many millieseconds it takes until an item has moved to its target (activated on shift click). 0 to disable.")
-    public static int appearAnimationTime = 150;
+    public static int appearAnimationTime = 100;
     @Config.Name("Item (dis)appear animation easing curve")
     public static Interpolation appearAnimationCurve = Interpolation.SINE_OUT;
 
