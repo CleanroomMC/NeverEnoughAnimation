@@ -16,6 +16,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -33,11 +34,13 @@ import java.awt.*;
 public class NEA {
 
     public static final Logger LOGGER = LogManager.getLogger(Tags.MODID);
+    public static boolean itemBordersLoaded = false;
     private static int mouseX, mouseY;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
+        itemBordersLoaded = Loader.isModLoaded("itemborders");
     }
 
     @SubscribeEvent
@@ -133,5 +136,9 @@ public class NEA {
         GlStateManager.enableDepth();
         GlStateManager.enableRescaleNormal();
         RenderHelper.enableStandardItemLighting();
+    }
+
+    public static boolean isItemBordersLoaded() {
+        return itemBordersLoaded;
     }
 }
