@@ -38,6 +38,9 @@
  * For more details, see https://docs.gradle.org/8.4/userguide/java_library_plugin.html#sec:java_library_configurations_graph
  */
 dependencies {
+    runtimeOnlyNonPublishable rfg.deobf('curse.maven:top-245211:2667280') // TOP 1.4.28
+    devOnlyNonPublishable rfg.deobf("curse.maven:had_enough_items-557549:5471944")
+
     devOnlyNonPublishable rfg.deobf("curse.maven:mouse_tweaks_unofficial-461660:4661407")
     devOnlyNonPublishable rfg.deobf("curse.maven:trashslot-235577:2722385")
 }

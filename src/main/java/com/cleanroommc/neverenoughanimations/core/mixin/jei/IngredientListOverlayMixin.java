@@ -1,7 +1,9 @@
 package com.cleanroommc.neverenoughanimations.core.mixin.jei;
 
+import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
 import mezz.jei.api.gui.IGuiProperties;
+import mezz.jei.config.Config;
 import mezz.jei.gui.overlay.IngredientListOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -27,7 +29,7 @@ public class IngredientListOverlayMixin {
 
     @Inject(method = "drawScreen", at = @At("HEAD"))
     public void drawScreenPre(Minecraft minecraft, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if (guiProperties != null) {
+        if (guiProperties != null && (!NEA.isHeiLoaded() || !Config.bufferIngredientRenders())) {
             GlStateManager.pushMatrix();
             GuiScreen screen = Minecraft.getMinecraft().currentScreen;
             if (screen instanceof GuiContainer container) {
@@ -40,7 +42,7 @@ public class IngredientListOverlayMixin {
 
     @Inject(method = "drawScreen", at = @At("TAIL"))
     public void drawScreenPost(Minecraft minecraft, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if (guiProperties != null) {
+        if (guiProperties != null && (!NEA.isHeiLoaded() || !Config.bufferIngredientRenders())) {
             GlStateManager.popMatrix();
         }
     }

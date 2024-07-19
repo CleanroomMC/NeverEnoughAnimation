@@ -19,6 +19,7 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -29,18 +30,27 @@ import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 
-@Mod(modid = Tags.MODID, version = Tags.VERSION, name = Tags.MODNAME,
-        acceptedMinecraftVersions = "[1.12.2]", clientSideOnly = true, dependencies = "required:mixinbooter@[8.8,);")
+@Mod(modid = Tags.MODID,
+     version = Tags.VERSION,
+     name = Tags.MODNAME,
+     acceptedMinecraftVersions = "[1.12.2]",
+     clientSideOnly = true,
+     dependencies = "required:mixinbooter@[8.8,);")
 public class NEA {
 
     public static final Logger LOGGER = LogManager.getLogger(Tags.MODID);
-    public static boolean itemBordersLoaded = false;
+    private static boolean itemBordersLoaded = false, jeiLoaded = false, heiLoaded = false;
     private static int mouseX, mouseY;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
         itemBordersLoaded = Loader.isModLoaded("itemborders");
+        jeiLoaded = Loader.isModLoaded("jei");
+        if (jeiLoaded) {
+            ModContainer mod = Loader.instance().getIndexedModList().get("jei");
+            heiLoaded = "Had Enough Items".equals(mod.getName());
+        }
     }
 
     @SubscribeEvent
@@ -117,7 +127,8 @@ public class NEA {
         FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
         container.drawString(fr, "Mouse Pos: " + mouseX + ", " + mouseY, 5, lineY, color);
         lineY -= 11;
-        container.drawString(fr, "Rel. Mouse Pos: " + (mouseX - container.getGuiLeft()) + ", " + (mouseY - container.getGuiTop()), 5, lineY, color);
+        container.drawString(fr, "Rel. Mouse Pos: " + (mouseX - container.getGuiLeft()) + ", " + (mouseY - container.getGuiTop()), 5, lineY,
+                             color);
         IItemLocation slot = IItemLocation.of(container.getSlotUnderMouse());
         if (slot != null) {
             lineY -= 11;
@@ -140,5 +151,13 @@ public class NEA {
 
     public static boolean isItemBordersLoaded() {
         return itemBordersLoaded;
+    }
+
+    public static boolean isJeiLoaded() {
+        return jeiLoaded;
+    }
+
+    public static boolean isHeiLoaded() {
+        return heiLoaded;
     }
 }
