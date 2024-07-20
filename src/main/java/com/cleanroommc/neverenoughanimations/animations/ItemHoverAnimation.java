@@ -66,7 +66,7 @@ public class ItemHoverAnimation {
     public static float getRenderScale(GuiContainer gui, Slot slot) {
         if (lastHoveredGui != gui || !isAnimating(slot) || NEAConfig.isBlacklisted(gui)) return 1f;
         float min = 1f, max = 1.25f;
-        float slotTime = hoveredSlots.getLong(slot);
+        long slotTime = hoveredSlots.getLong(slot);
         float val = (NEA.time() - Math.abs(slotTime)) / (float) NEAConfig.hoverAnimationTime;
         if (slotTime < 0) {
             // negative time means slot is no longer hovered
