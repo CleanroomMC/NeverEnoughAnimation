@@ -160,4 +160,8 @@ public class NEA {
     public static boolean isHeiLoaded() {
         return heiLoaded;
     }
+
+    public static long time() {
+        return System.nanoTime() / 1_000_000L;
+    }
 }

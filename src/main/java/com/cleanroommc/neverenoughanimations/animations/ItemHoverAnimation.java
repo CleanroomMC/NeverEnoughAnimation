@@ -1,8 +1,8 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
+import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraftforge.client.event.GuiOpenEvent;
@@ -37,7 +37,7 @@ public class ItemHoverAnimation {
     }
 
     private static void startAnimation(Slot slot, boolean grow) {
-        hoveredSlots.put(slot, Minecraft.getSystemTime() * (grow ? 1 : -1));
+        hoveredSlots.put(slot, NEA.time() * (grow ? 1 : -1));
     }
 
     public static boolean isAnimating(Slot slot) {
@@ -64,12 +64,10 @@ public class ItemHoverAnimation {
     }
 
     public static float getRenderScale(GuiContainer gui, Slot slot) {
-        if (lastHoveredGui != gui ||
-                !isAnimating(slot) ||
-                NEAConfig.isBlacklisted(gui)) return 1f;
+        if (lastHoveredGui != gui || !isAnimating(slot) || NEAConfig.isBlacklisted(gui)) return 1f;
         float min = 1f, max = 1.25f;
         float slotTime = hoveredSlots.getLong(slot);
-        float val = (Minecraft.getSystemTime() - Math.abs(slotTime)) / (float) NEAConfig.hoverAnimationTime;
+        float val = (NEA.time() - Math.abs(slotTime)) / (float) NEAConfig.hoverAnimationTime;
         if (slotTime < 0) {
             // negative time means slot is no longer hovered
             val = 1f - val;

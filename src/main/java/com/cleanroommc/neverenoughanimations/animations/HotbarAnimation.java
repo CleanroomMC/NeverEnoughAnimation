@@ -1,5 +1,6 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
+import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -22,7 +23,7 @@ public class HotbarAnimation {
             reset();
             return;
         }
-        HotbarAnimation.startTime = Minecraft.getSystemTime();
+        HotbarAnimation.startTime = NEA.time();
     }
 
     public static boolean isAnimationInProgress() {
@@ -44,7 +45,7 @@ public class HotbarAnimation {
             reset();
             return getX(sr, def);
         }
-        float val = (Minecraft.getSystemTime() - HotbarAnimation.startTime) / (float) NEAConfig.hotbarAnimationTime;
+        float val = (NEA.time() - HotbarAnimation.startTime) / (float) NEAConfig.hotbarAnimationTime;
         if (val >= 1f) {
             // animation ended
             reset();

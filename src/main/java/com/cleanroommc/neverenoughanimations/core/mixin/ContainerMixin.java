@@ -101,7 +101,7 @@ public abstract class ContainerMixin {
         IItemLocation source = IItemLocation.of(slot);
         ItemStack movingStack = instance.copy();
         movingStack.setCount(quantity);
-        packets.get().put(source.nea$getSlotNumber(), new ItemMovePacket(Minecraft.getSystemTime(), source, IItemLocation.CURSOR, movingStack));
+        packets.get().put(source.nea$getSlotNumber(), new ItemMovePacket(NEA.time(), source, IItemLocation.CURSOR, movingStack));
         instance.grow(quantity);
     }
 

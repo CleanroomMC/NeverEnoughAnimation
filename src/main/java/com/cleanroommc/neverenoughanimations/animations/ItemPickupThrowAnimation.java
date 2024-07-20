@@ -1,6 +1,7 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
 import com.cleanroommc.neverenoughanimations.IItemLocation;
+import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.client.Minecraft;
@@ -47,7 +48,7 @@ public class ItemPickupThrowAnimation {
 
     public static void animate(IItemLocation slot) {
         if (lastGui == null) return;
-        animated.put(slot, Minecraft.getSystemTime());
+        animated.put(slot, NEA.time());
         if (slot.nea$getSlotNumber() < 0) removalAnimation.add(slot);
     }
 
@@ -67,7 +68,7 @@ public class ItemPickupThrowAnimation {
     public static float getValue(GuiContainer container, IItemLocation slot) {
         if (lastGui != container || !animated.containsKey(slot)) return 1f;
         long time = animated.getLong(slot);
-        float val = (Minecraft.getSystemTime() - time) / (float) NEAConfig.appearAnimationTime;
+        float val = (NEA.time() - time) / (float) NEAConfig.appearAnimationTime;
         if (val >= 1f) {
             animated.removeLong(slot);
             return 1f;

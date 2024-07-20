@@ -22,7 +22,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -62,10 +61,9 @@ public class ItemMoveAnimation {
     }
 
     public static ItemStack getVirtualStack(GuiContainer container, IItemLocation slot) {
-        return container == lastGui && !NEAConfig.isBlacklisted(container) &&
-                virtualStacks.size() > slot.nea$getSlotNumber() + 1 &&
-                virtualStacksUser.getInt(slot.nea$getSlotNumber() + 1) > 0 ?
-                virtualStacks.get(slot.nea$getSlotNumber() + 1) : null;
+        return container == lastGui && !NEAConfig.isBlacklisted(
+                container) && virtualStacks.size() > slot.nea$getSlotNumber() + 1 && virtualStacksUser.getInt(
+                slot.nea$getSlotNumber() + 1) > 0 ? virtualStacks.get(slot.nea$getSlotNumber() + 1) : null;
     }
 
     @ApiStatus.Internal
@@ -109,9 +107,10 @@ public class ItemMoveAnimation {
      */
     @ApiStatus.Internal
     public static Pair<List<Slot>, List<ItemStack>> getCandidates(Slot in, List<Slot> allSlots) {
-        if (NEAConfig.moveAnimationTime == 0 ||
-                NEAConfig.isBlacklisted(Minecraft.getMinecraft().currentScreen) ||
-                Minecraft.getSystemTime() - lastAnimation <= 10) return null;
+        if (NEAConfig.moveAnimationTime == 0 || NEAConfig.isBlacklisted(
+                Minecraft.getMinecraft().currentScreen) || NEA.time() - lastAnimation <= 10) {
+            return null;
+        }
         List<Slot> slots = new ArrayList<>(allSlots.size());
         List<ItemStack> stacks = new ArrayList<>(allSlots.size());
         ItemStack item = IItemLocation.of(in).nea$getStack();
@@ -143,7 +142,7 @@ public class ItemMoveAnimation {
         List<ItemMovePacket> packets = new ArrayList<>();
         Int2ObjectArrayMap<ItemStack> stagedVirtualStacks = new Int2ObjectArrayMap<>();
         boolean error = false;
-        long time = Minecraft.getSystemTime();
+        long time = NEA.time();
         for (int i = 0; i < slots.size(); i++) {
             IItemLocation slot = IItemLocation.of(slots.get(i));
             if (slot == sourceLoc) continue;
@@ -181,7 +180,8 @@ public class ItemMoveAnimation {
             if (total <= 0) break;
         }
         if (total < 0) {
-            NEA.LOGGER.error("The original stack had {} items, but {} items where moved!", oldSource.getCount(), oldSource.getCount() - total);
+            NEA.LOGGER.error("The original stack had {} items, but {} items where moved!", oldSource.getCount(),
+                             oldSource.getCount() - total);
         }
         if (error || packets.isEmpty()) return;
         queueAnimation(sourceLoc.nea$getSlotNumber(), packets);
@@ -189,7 +189,7 @@ public class ItemMoveAnimation {
             var e = iterator.next();
             updateVirtualStack(e.getIntKey(), e.getValue(), 1);
         }
-        lastAnimation = Minecraft.getSystemTime();
+        lastAnimation = NEA.time();
     }
 
     /**

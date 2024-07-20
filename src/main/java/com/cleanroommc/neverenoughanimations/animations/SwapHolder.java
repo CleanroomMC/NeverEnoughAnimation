@@ -1,6 +1,7 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
 import com.cleanroommc.neverenoughanimations.IItemLocation;
+import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -47,7 +48,7 @@ public class SwapHolder {
         }
         IItemLocation hotbar = IItemLocation.of(this.hotbarSlot);
         IItemLocation hovering = IItemLocation.of(this.targetSlot);
-        long time = Minecraft.getSystemTime();
+        long time = NEA.time();
         if (this.targetStack.isEmpty()) {
             if (!hovering.nea$getStack().isEmpty()) {
                 ItemMoveAnimation.queueAnimation(hotbar.nea$getSlotNumber(),
@@ -97,10 +98,7 @@ public class SwapHolder {
     public static Slot findHotbarSlot(List<Slot> slots, int index) {
         for (Slot slot : slots) {
             if (slot.getSlotIndex() != index) continue;
-            if (slot.inventory instanceof InventoryPlayer ||
-                    (slot instanceof SlotItemHandler slotItemHandler &&
-                            (slotItemHandler.getItemHandler() instanceof PlayerMainInvWrapper ||
-                                    slotItemHandler.getItemHandler() instanceof PlayerInvWrapper))) {
+            if (slot.inventory instanceof InventoryPlayer || (slot instanceof SlotItemHandler slotItemHandler && (slotItemHandler.getItemHandler() instanceof PlayerMainInvWrapper || slotItemHandler.getItemHandler() instanceof PlayerInvWrapper))) {
                 return slot;
             }
         }

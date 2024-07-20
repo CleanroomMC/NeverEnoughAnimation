@@ -1,5 +1,6 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
+import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import com.cleanroommc.neverenoughanimations.util.Interpolations;
 import net.minecraft.client.Minecraft;
@@ -31,7 +32,7 @@ public class OpeningAnimation {
         if (NEAConfig.openingAnimationTime == 0 || NEAConfig.isBlacklisted(container)) return;
         animatedGui = container;
         lastGui = container;
-        startTime = Minecraft.getSystemTime() * (open ? 1 : -1);
+        startTime = NEA.time() * (open ? 1 : -1);
     }
 
     public static float getScale(GuiContainer container) {
@@ -42,7 +43,7 @@ public class OpeningAnimation {
     public static float getValue(GuiContainer container) {
         if (shouldCloseLast) return 0.001f;
         if (animatedGui != container) return 1f;
-        float val = (Minecraft.getSystemTime() - Math.abs(startTime)) / (float) NEAConfig.openingAnimationTime;
+        float val = (NEA.time() - Math.abs(startTime)) / (float) NEAConfig.openingAnimationTime;
         if (startTime < 0) {
             val = 1f - val;
             if (val <= 0) {
