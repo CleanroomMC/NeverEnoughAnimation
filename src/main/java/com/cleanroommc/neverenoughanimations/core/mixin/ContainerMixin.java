@@ -72,7 +72,7 @@ public abstract class ContainerMixin {
             cir.setReturnValue(itemstack);
         } else if (clickTypeIn == ClickType.SWAP && dragType >= 0 && dragType < 9) {
             // fuck creative inventory
-            if ((Object) this instanceof GuiContainerCreative.ContainerCreative) return;
+            if ((Object) this instanceof GuiContainerCreative.ContainerCreative || NEAConfig.moveAnimationTime == 0) return;
             Slot targetSlot = this.inventorySlots.get(slotId);
             if (SwapHolder.INSTANCE.init(targetSlot, this.inventorySlots, dragType)) {
                 swapHolder.set(SwapHolder.INSTANCE);
@@ -88,27 +88,36 @@ public abstract class ContainerMixin {
         }
     }
 
-    @Inject(method = "slotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/InventoryPlayer;getItemStack()Lnet/minecraft/item/ItemStack;", ordinal = 13))
-    public void pickupAllPre(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player,
-                             CallbackInfoReturnable<ItemStack> cir, @Share("cursor") LocalRef<ItemStack> cursor) {
+    @Inject(method = "slotClick",
+            at = @At(value = "INVOKE",
+                     target = "Lnet/minecraft/entity/player/InventoryPlayer;getItemStack()Lnet/minecraft/item/ItemStack;",
+                     ordinal = 13))
+    public void pickupAllPre(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir,
+                             @Share("cursor") LocalRef<ItemStack> cursor) {
+        if (NEAConfig.moveAnimationTime == 0) return;
         cursor.set(player.inventory.getItemStack().copy());
     }
 
     @Redirect(method = "slotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;grow(I)V", ordinal = 2))
-    public void pickupAllMid(ItemStack instance, int quantity, @Share("packets") LocalRef<Int2ObjectArrayMap<ItemMovePacket>> packets, @Local(ordinal = 1) Slot slot) {
-        if (NEAConfig.moveAnimationTime == 0) return;
-        if (packets.get() == null) packets.set(new Int2ObjectArrayMap<>());
-        IItemLocation source = IItemLocation.of(slot);
-        ItemStack movingStack = instance.copy();
-        movingStack.setCount(quantity);
-        packets.get().put(source.nea$getSlotNumber(), new ItemMovePacket(NEA.time(), source, IItemLocation.CURSOR, movingStack));
+    public void pickupAllMid(ItemStack instance, int quantity, @Share("packets") LocalRef<Int2ObjectArrayMap<ItemMovePacket>> packets,
+                             @Local(ordinal = 1) Slot slot) {
+        if (NEAConfig.moveAnimationTime > 0) {
+            // handle animation
+            if (packets.get() == null) packets.set(new Int2ObjectArrayMap<>());
+            IItemLocation source = IItemLocation.of(slot);
+            ItemStack movingStack = instance.copy();
+            movingStack.setCount(quantity);
+            packets.get().put(source.nea$getSlotNumber(), new ItemMovePacket(NEA.time(), source, IItemLocation.CURSOR, movingStack));
+        }
+        // do the redirected action
         instance.grow(quantity);
     }
 
     @Inject(method = "slotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Container;detectAndSendChanges()V"))
-    public void pickupAllPost(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player,
-                              CallbackInfoReturnable<ItemStack> cir, @Share("packets") LocalRef<Int2ObjectArrayMap<ItemMovePacket>> packets,
+    public void pickupAllPost(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir,
+                              @Share("packets") LocalRef<Int2ObjectArrayMap<ItemMovePacket>> packets,
                               @Share("cursor") LocalRef<ItemStack> cursor) {
+        if (NEAConfig.moveAnimationTime == 0) return;
         if (packets.get() != null && !packets.get().isEmpty()) {
             for (var iterator = packets.get().int2ObjectEntrySet().fastIterator(); iterator.hasNext(); ) {
                 var e = iterator.next();
@@ -118,9 +127,13 @@ public abstract class ContainerMixin {
         }
     }
 
-    @Inject(method = "slotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/item/EntityItem;", ordinal = 3))
-    public void throwItem(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player,
-                          CallbackInfoReturnable<ItemStack> cir, @Local(ordinal = 1) LocalRef<ItemStack> throwing) {
+    @Inject(method = "slotClick",
+            at = @At(value = "INVOKE",
+                     target = "Lnet/minecraft/entity/player/EntityPlayer;dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/item/EntityItem;",
+                     ordinal = 3))
+    public void throwItem(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player, CallbackInfoReturnable<ItemStack> cir,
+                          @Local(ordinal = 1) LocalRef<ItemStack> throwing) {
+        if (NEAConfig.appearAnimationTime == 0) return;
         IItemLocation slot = IItemLocation.of(this.inventorySlots.get(slotId));
         if (slot.nea$getStack().isEmpty()) {
             // only animate when shift is held (throw hole stack) or only one item is left
@@ -128,9 +141,11 @@ public abstract class ContainerMixin {
         }
     }
 
-    @ModifyArg(method = "slotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/item/EntityItem;"))
+    @ModifyArg(method = "slotClick",
+               at = @At(value = "INVOKE",
+                        target = "Lnet/minecraft/entity/player/EntityPlayer;dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/item/EntityItem;"))
     public ItemStack animateThrow(ItemStack itemStackIn, @Local(ordinal = 0, argsOnly = true) int slot) {
-        if (slot == -999) {
+        if (NEAConfig.appearAnimationTime > 0 && slot == -999) {
             ItemPickupThrowAnimation.animate(NEA.getMouseX() - 8, NEA.getMouseY() - 8, itemStackIn.copy(), true);
         }
         return itemStackIn;
