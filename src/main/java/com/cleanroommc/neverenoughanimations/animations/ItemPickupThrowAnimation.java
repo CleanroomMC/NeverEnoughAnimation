@@ -77,13 +77,15 @@ public class ItemPickupThrowAnimation {
     }
 
     public static void drawIndependentAnimations(GuiContainer container, RenderItem itemRender, FontRenderer fontRenderer) {
-        for (Iterator<IItemLocation> iterator = removalAnimation.iterator(); iterator.hasNext(); ) {
-            IItemLocation slot = iterator.next();
+        for (int i = 0, n = removalAnimation.size(); i < n; i++) {
+            IItemLocation slot = removalAnimation.get(i);
             int x = slot.nea$getX();
             int y = slot.nea$getY();
             float value = 1f - getValue(container, slot);
             if (value <= 0f) {
-                iterator.remove();
+                removalAnimation.remove(i);
+                i--;
+                n--;
                 continue;
             }
             GlStateManager.translate(x, y, 0);
@@ -93,7 +95,9 @@ public class ItemPickupThrowAnimation {
                 GlStateManager.scale(value, value, 1);
                 GlStateManager.translate(-8, -8, 0);
             } else if (!animated.containsKey(slot)) {
-                iterator.remove();
+                removalAnimation.remove(i);
+                i--;
+                n--;
                 GlStateManager.translate(-x, -y, 0);
                 continue;
             }
