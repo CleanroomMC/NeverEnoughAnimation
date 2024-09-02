@@ -5,10 +5,10 @@
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "client": [
+    "ContainerMixin",
     "CreativeSlotMixin",
     "GuiContainerMixin",
     "GuiIngameMixin",
-    "ContainerMixin",
     "InventoryPlayerMixin",
     "SlotMixin"
   ],

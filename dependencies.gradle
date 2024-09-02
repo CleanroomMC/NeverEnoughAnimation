@@ -39,8 +39,16 @@
  */
 dependencies {
     runtimeOnlyNonPublishable rfg.deobf('curse.maven:top-245211:2667280') // TOP 1.4.28
-    devOnlyNonPublishable rfg.deobf("curse.maven:had_enough_items-557549:5471944")
+    implementation "mezz:jei:4.25.5", { transitive false }
 
-    devOnlyNonPublishable rfg.deobf("curse.maven:mouse_tweaks_unofficial-461660:4661407")
-    devOnlyNonPublishable rfg.deobf("curse.maven:trashslot-235577:2722385")
+    implementation rfg.deobf("curse.maven:mouse_tweaks_unofficial-461660:4661407")
+    implementation rfg.deobf("curse.maven:trashslot-235577:2722385")
+
+    compileOnlyApi "codechicken:codechickenlib:3.2.3.358", { transitive false }
+    compileOnly rfg.deobf('curse.maven:cofh_core-69162:2920433')
+    compileOnly rfg.deobf('curse.maven:cofh_world-271384:2920434')
+    compileOnly rfg.deobf('curse.maven:thermal_expansion-69163:2926431')
+    compileOnly rfg.deobf('curse.maven:thermal_foundation-222880:2926428')
+    compileOnly rfg.deobf('curse.maven:redstone_flux-270789:2920436')
+
 }
