@@ -1,15 +1,13 @@
 package com.cleanroommc.neverenoughanimations;
 
+import com.cleanroommc.neverenoughanimations.config.Config;
 import com.cleanroommc.neverenoughanimations.util.Interpolation;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.common.config.Config;
+import net.minecraft.client.gui.screens.Screen;
 
-@Config(modid = Tags.MODID)
 public class NEAConfig {
 
     @Config.Name("Hover animation time")
-    @Config.SlidingOption
     @Config.RangeInt(min = 0, max = 1000)
     @Config.Comment("How many millieseconds it takes until an item is scaled to its full size on hover. 0 to disable.")
     public static int hoverAnimationTime = 100;
@@ -21,23 +19,20 @@ public class NEAConfig {
     public static boolean itemHoverOverlay = false;
 
     @Config.Name("Item move animation time")
-    @Config.SlidingOption
     @Config.RangeInt(min = 0, max = 1000)
     @Config.Comment("How many millieseconds it takes until an item has moved to its target (activated on shift click). 0 to disable.")
-    public static int moveAnimationTime = 100;
+    public static int moveAnimationTime = 150;
     @Config.Name("Item move animation easing curve")
     public static Interpolation moveAnimationCurve = Interpolation.SINE_OUT;
 
     @Config.Name("Item (dis)appear animation time")
-    @Config.SlidingOption
     @Config.RangeInt(min = 0, max = 1000)
     @Config.Comment("How many millieseconds it takes until an item has moved to its target (activated on shift click). 0 to disable.")
-    public static int appearAnimationTime = 100;
+    public static int appearAnimationTime = 150;
     @Config.Name("Item (dis)appear animation easing curve")
     public static Interpolation appearAnimationCurve = Interpolation.SINE_OUT;
 
     @Config.Name("Hotbar animation time")
-    @Config.SlidingOption
     @Config.RangeInt(min = 0, max = 1000)
     @Config.Comment("How many millieseconds it takes until the current item marker in the hotbar moved to its new location. 0 to disable.")
     public static int hotbarAnimationTime = 100;
@@ -45,10 +40,9 @@ public class NEAConfig {
     public static Interpolation hotbarAnimationCurve = Interpolation.QUAD_INOUT;
 
     @Config.Name("Opening/Closing animation time")
-    @Config.SlidingOption
     @Config.RangeInt(min = 0, max = 1000)
     @Config.Comment("How many millieseconds it takes until the gui is fully opened. 0 to disable.")
-    public static int openingAnimationTime = 60;
+    public static int openingAnimationTime = 90;
     @Config.Name("Opening/Closing animation easing curve")
     public static Interpolation openingAnimationCurve = Interpolation.SINE_OUT;
 
@@ -60,7 +54,7 @@ public class NEAConfig {
     @Config.Ignore
     public static Object2BooleanOpenHashMap<Class<?>> blacklistCache = new Object2BooleanOpenHashMap<>();
 
-    public static boolean isBlacklisted(GuiScreen screen) {
+    public static boolean isBlacklisted(Screen screen) {
         if (screen == null) return true;
         if (guiAnimationBlacklist.length == 0) return false;
         if (blacklistCache.containsKey(screen.getClass())) return blacklistCache.getBoolean(screen.getClass());

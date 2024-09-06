@@ -1,13 +1,13 @@
 {
   "package": "com.cleanroommc.neverenoughanimations.core.mixin.jei",
   "refmap": "mixins.neverenoughanimations.refmap.json",
+  "plugin": "com.cleanroommc.neverenoughanimations.core.MixinPlugins$Jei",
   "target": "@env(DEFAULT)",
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "IngredientListOverlayMixin",
-    "LeftAreaDispatcherMixin"
+    "BookmarkOverlayMixin",
+    "IngredientListOverlayMixin"
   ],
-  "mixins": [
-  ]
+  "mixins": []
 }

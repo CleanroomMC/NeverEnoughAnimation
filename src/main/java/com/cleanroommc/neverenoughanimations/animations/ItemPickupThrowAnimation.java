@@ -4,41 +4,40 @@ import com.cleanroommc.neverenoughanimations.IItemLocation;
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class ItemPickupThrowAnimation {
 
     private static final Object2LongOpenHashMap<IItemLocation> animated = new Object2LongOpenHashMap<>();
     private static final List<IItemLocation> removalAnimation = new ArrayList<>();
-    private static GuiContainer lastGui;
+    private static AbstractContainerScreen<?> lastGui;
 
     @ApiStatus.Internal
-    public static void onGuiOpen(GuiOpenEvent event) {
+    public static void onGuiOpen(ScreenEvent.Opening event) {
         if (NEAConfig.hoverAnimationTime > 0) {
-            if (!(event.getGui() instanceof GuiContainer)) {
-                if (lastGui != null) {
-                    lastGui = null;
-                    animated.clear();
-                }
+            if (!(event.getNewScreen() instanceof AbstractContainerScreen<?>)) {
+                onGuiClose();
                 return;
             }
-            if (!NEAConfig.isBlacklisted(event.getGui())) {
-                lastGui = (GuiContainer) event.getGui();
+            if (!NEAConfig.isBlacklisted(event.getNewScreen())) {
+                lastGui = (AbstractContainerScreen<?>) event.getNewScreen();
                 animated.clear();
             }
         }
+    }
+
+    public static void onGuiClose() {
+        lastGui = null;
+        animated.clear();
     }
 
     public static void animate(Slot slot) {
@@ -61,11 +60,11 @@ public class ItemPickupThrowAnimation {
         animate(new IItemLocation.Impl(x, y, stack));
     }
 
-    public static float getValue(GuiContainer container, Slot slot) {
+    public static float getValue(AbstractContainerScreen<?> container, Slot slot) {
         return getValue(container, IItemLocation.of(slot));
     }
 
-    public static float getValue(GuiContainer container, IItemLocation slot) {
+    public static float getValue(AbstractContainerScreen<?> container, IItemLocation slot) {
         if (lastGui != container || !animated.containsKey(slot)) return 1f;
         long time = animated.getLong(slot);
         float val = (NEA.time() - time) / (float) NEAConfig.appearAnimationTime;
@@ -76,7 +75,8 @@ public class ItemPickupThrowAnimation {
         return NEAConfig.appearAnimationCurve.interpolate(0f, 1f, val);
     }
 
-    public static void drawIndependentAnimations(GuiContainer container, RenderItem itemRender, FontRenderer fontRenderer) {
+    public static void drawIndependentAnimations(AbstractContainerScreen<?> container, GuiGraphics graphics, Font font) {
+        var pose = graphics.pose();
         for (int i = 0, n = removalAnimation.size(); i < n; i++) {
             IItemLocation slot = removalAnimation.get(i);
             int x = slot.nea$getX();
@@ -88,28 +88,24 @@ public class ItemPickupThrowAnimation {
                 n--;
                 continue;
             }
-            GlStateManager.translate(x, y, 0);
+            pose.translate(x, y, 32f);
             if (value <= 1f) {
-                GlStateManager.pushMatrix();
-                GlStateManager.translate(8, 8, 0);
-                GlStateManager.scale(value, value, 1);
-                GlStateManager.translate(-8, -8, 0);
+                pose.pushPose();
+                pose.translate(8, 8, 0);
+                pose.scale(value, value, 1);
+                pose.translate(-8, -8, 0);
             } else if (!animated.containsKey(slot)) {
                 removalAnimation.remove(i);
                 i--;
                 n--;
-                GlStateManager.translate(-x, -y, 0);
+                pose.translate(-x, -y, 0);
                 continue;
             }
-            GlStateManager.translate(0, 0, 32f);
-            FontRenderer font = slot.nea$getStack().getItem().getFontRenderer(slot.nea$getStack());
-            if (font == null) font = fontRenderer;
-            itemRender.renderItemAndEffectIntoGUI(Minecraft.getMinecraft().player, slot.nea$getStack(), 0, 0);
-            itemRender.renderItemOverlayIntoGUI(font, slot.nea$getStack(), 0, 0, null);
+            NEA.drawItem(slot.nea$getStack(), graphics, font, 0, 0);
             if (value <= 1f) {
-                GlStateManager.popMatrix();
+                pose.popPose();
             }
-            GlStateManager.translate(-x, -y, 0);
+            pose.translate(-x, -y, 0);
         }
     }
 }

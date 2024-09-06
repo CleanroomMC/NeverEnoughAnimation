@@ -1,4 +1,4 @@
-package com.cleanroommc.neverenoughanimations.core.mixin.trashslot;
+/*package com.cleanroommc.neverenoughanimations.core.mixin.trashslot;
 
 import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
 import net.blay09.mods.trashslot.client.ClientProxy;
@@ -29,4 +29,4 @@ public class ClientProxyMixin {
     public void onDrawBackground(GuiScreenEvent.BackgroundDrawnEvent event, CallbackInfo ci) {
         OpeningAnimation.handleScale((GuiContainer) event.getGui(), false);
     }
-}
+}*/

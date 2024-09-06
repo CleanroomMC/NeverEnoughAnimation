@@ -1,12 +1,10 @@
 package com.cleanroommc.neverenoughanimations.util;
 
-import net.minecraft.util.math.MathHelper;
-
 /**
  * Interpolation methods
  * <p>
- * This class is responsible for doing different kind of interpolations. Cubic
- * interpolation code was from website below, but BauerCam also uses this code.
+ * This class is responsible for doing different kind of interpolations. Cubic interpolation code was from website below, but BauerCam also
+ * uses this code.
  *
  * @author mchorse
  * @see <a href="http://paulbourke.net/miscellaneous/interpolation/">Interpolations</a>
@@ -21,22 +19,20 @@ public class Interpolations {
     }
 
     /**
-     * Special interpolation method for interpolating yaw. The problem with yaw,
-     * is that it may go in the "wrong" direction when having, for example,
-     * -170 (as a) and 170 (as b) degress or other way around (170 and -170).
+     * Special interpolation method for interpolating yaw. The problem with yaw, is that it may go in the "wrong" direction when having, for
+     * example, -170 (as a) and 170 (as b) degress or other way around (170 and -170).
      * <p>
      * This interpolation method fixes this problem.
      */
     public static float lerpYaw(float a, float b, float position) {
-        a = MathHelper.wrapDegrees(a);
-        b = MathHelper.wrapDegrees(b);
+        a = wrapDegrees(a);
+        b = wrapDegrees(b);
 
         return lerp(a, normalizeYaw(a, b), position);
     }
 
     /**
-     * Cubic interpolation using Hermite between y1 and y2. Taken from paul's
-     * website.
+     * Cubic interpolation using Hermite between y1 and y2. Taken from paul's website.
      *
      * @param y0 - points[x-1]
      * @param y1 - points[x]
@@ -56,10 +52,10 @@ public class Interpolations {
      * Yaw normalization for cubic interpolation
      */
     public static double cubicHermiteYaw(float y0, float y1, float y2, float y3, float position) {
-        y0 = MathHelper.wrapDegrees(y0);
-        y1 = MathHelper.wrapDegrees(y1);
-        y2 = MathHelper.wrapDegrees(y2);
-        y3 = MathHelper.wrapDegrees(y3);
+        y0 = wrapDegrees(y0);
+        y1 = wrapDegrees(y1);
+        y2 = wrapDegrees(y2);
+        y3 = wrapDegrees(y3);
 
         y1 = normalizeYaw(y0, y1);
         y2 = normalizeYaw(y1, y2);
@@ -89,10 +85,10 @@ public class Interpolations {
      * Yaw normalization for cubic interpolation
      */
     public static float cubicYaw(float y0, float y1, float y2, float y3, float position) {
-        y0 = MathHelper.wrapDegrees(y0);
-        y1 = MathHelper.wrapDegrees(y1);
-        y2 = MathHelper.wrapDegrees(y2);
-        y3 = MathHelper.wrapDegrees(y3);
+        y0 = wrapDegrees(y0);
+        y1 = wrapDegrees(y1);
+        y2 = wrapDegrees(y2);
+        y3 = wrapDegrees(y3);
 
         y1 = normalizeYaw(y0, y1);
         y2 = normalizeYaw(y1, y2);
@@ -102,8 +98,7 @@ public class Interpolations {
     }
 
     /**
-     * Calculate X value for given T using some brute force algorithm...
-     * This method should be precise enough
+     * Calculate X value for given T using some brute force algorithm... This method should be precise enough
      *
      * @param x1      - control point of initial value
      * @param x2      - control point of final value
@@ -130,8 +125,7 @@ public class Interpolations {
     }
 
     /**
-     * Calculate X value for given T using default epsilon value. See
-     * other overload method for more information.
+     * Calculate X value for given T using default epsilon value. See other overload method for more information.
      */
     public static float bezierX(float x1, float x2, float t) {
         return bezierX(x1, x2, t, 0.0005F);
@@ -157,8 +151,7 @@ public class Interpolations {
     }
 
     /**
-     * Normalize yaw rotation (argument {@code b}) based on the previous
-     * yaw rotation.
+     * Normalize yaw rotation (argument {@code b}) based on the previous yaw rotation.
      */
     public static float normalizeYaw(float a, float b) {
         float diff = a - b;
@@ -204,15 +197,14 @@ public class Interpolations {
     }
 
     /**
-     * Special interpolation method for interpolating yaw. The problem with yaw,
-     * is that it may go in the "wrong" direction when having, for example,
-     * -170 (as a) and 170 (as b) degress or other way around (170 and -170).
+     * Special interpolation method for interpolating yaw. The problem with yaw, is that it may go in the "wrong" direction when having, for
+     * example, -170 (as a) and 170 (as b) degress or other way around (170 and -170).
      * <p>
      * This interpolation method fixes this problem.
      */
     public static double lerpYaw(double a, double b, double position) {
-        a = MathHelper.wrapDegrees(a);
-        b = MathHelper.wrapDegrees(b);
+        a = wrapDegrees(a);
+        b = wrapDegrees(b);
 
         return lerp(a, normalizeYaw(a, b), position);
     }
@@ -238,10 +230,10 @@ public class Interpolations {
      * Yaw normalization for cubic interpolation
      */
     public static double cubicYaw(double y0, double y1, double y2, double y3, double position) {
-        y0 = MathHelper.wrapDegrees(y0);
-        y1 = MathHelper.wrapDegrees(y1);
-        y2 = MathHelper.wrapDegrees(y2);
-        y3 = MathHelper.wrapDegrees(y3);
+        y0 = wrapDegrees(y0);
+        y1 = wrapDegrees(y1);
+        y2 = wrapDegrees(y2);
+        y3 = wrapDegrees(y3);
 
         y1 = normalizeYaw(y0, y1);
         y2 = normalizeYaw(y1, y2);
@@ -251,8 +243,7 @@ public class Interpolations {
     }
 
     /**
-     * Calculate X value for given T using some brute force algorithm...
-     * This method should be precise enough
+     * Calculate X value for given T using some brute force algorithm... This method should be precise enough
      *
      * @param x1      - control point of initial value
      * @param x2      - control point of final value
@@ -279,8 +270,7 @@ public class Interpolations {
     }
 
     /**
-     * Calculate X value for given T using default epsilon value. See
-     * other overload method for more information.
+     * Calculate X value for given T using default epsilon value. See other overload method for more information.
      */
     public static double bezierX(double x1, double x2, float t) {
         return bezierX(x1, x2, t, 0.0005F);
@@ -306,8 +296,7 @@ public class Interpolations {
     }
 
     /**
-     * Normalize yaw rotation (argument {@code b}) based on the previous
-     * yaw rotation.
+     * Normalize yaw rotation (argument {@code b}) based on the previous yaw rotation.
      */
     public static double normalizeYaw(double a, double b) {
         double diff = a - b;
@@ -341,5 +330,39 @@ public class Interpolations {
         if (x > highIn) return 1 - (x - highIn) / (highOut - highIn);
 
         return 1;
+    }
+
+    /**
+     * the angle is reduced to an angle between -180 and +180 by mod, and a 360 check
+     */
+    public static float wrapDegrees(float value) {
+        value = value % 360.0F;
+
+        if (value >= 180.0F) {
+            value -= 360.0F;
+        }
+
+        if (value < -180.0F) {
+            value += 360.0F;
+        }
+
+        return value;
+    }
+
+    /**
+     * the angle is reduced to an angle between -180 and +180 by mod, and a 360 check
+     */
+    public static double wrapDegrees(double value) {
+        value = value % 360.0D;
+
+        if (value >= 180.0D) {
+            value -= 360.0D;
+        }
+
+        if (value < -180.0D) {
+            value += 360.0D;
+        }
+
+        return value;
     }
 }

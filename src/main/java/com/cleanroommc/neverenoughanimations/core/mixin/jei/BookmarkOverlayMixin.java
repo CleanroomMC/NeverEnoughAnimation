@@ -2,7 +2,7 @@ package com.cleanroommc.neverenoughanimations.core.mixin.jei;
 
 import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
 import mezz.jei.gui.overlay.IngredientGridWithNavigation;
-import mezz.jei.gui.overlay.IngredientListOverlay;
+import mezz.jei.gui.overlay.bookmarks.BookmarkOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -14,10 +14,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = IngredientListOverlay.class, remap = false)
-public class IngredientListOverlayMixin {
+@Mixin(value = BookmarkOverlay.class, remap = false)
+public abstract class BookmarkOverlayMixin {
 
-    @Shadow @Final private IngredientGridWithNavigation contents;
+    @Shadow
+    @Final
+    private IngredientGridWithNavigation contents;
 
     @Inject(method = "drawScreen", at = @At("HEAD"))
     public void drawScreenPre(Minecraft minecraft, GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
@@ -26,7 +28,7 @@ public class IngredientListOverlayMixin {
         if (screen instanceof AbstractContainerScreen<?> container) {
             float val = 1f - OpeningAnimation.getValue(container);
             if (val <= 0f) return;
-            guiGraphics.pose().translate(contents.getBackgroundArea().width() * val, 0, 0);
+            guiGraphics.pose().translate(-contents.getBackgroundArea().width() * val, 0, 0);
         }
     }
 

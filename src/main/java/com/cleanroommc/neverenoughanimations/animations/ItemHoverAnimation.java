@@ -3,37 +3,36 @@ package com.cleanroommc.neverenoughanimations.animations;
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Slot;
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.Slot;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import org.jetbrains.annotations.ApiStatus;
 
-@SideOnly(Side.CLIENT)
 public class ItemHoverAnimation {
 
-    private static GuiContainer lastHoveredGui = null;
+    private static AbstractContainerScreen<?> lastHoveredGui = null;
     private static Slot lastHoveredSlot = null;
     private static final Object2LongOpenHashMap<Slot> hoveredSlots = new Object2LongOpenHashMap<>(32);
 
     @ApiStatus.Internal
-    public static void onGuiOpen(GuiOpenEvent event) {
+    public static void onGuiOpen(ScreenEvent.Opening event) {
         if (NEAConfig.hoverAnimationTime > 0) {
-            if (!(event.getGui() instanceof GuiContainer)) {
-                if (lastHoveredGui != null) {
-                    lastHoveredGui = null;
-                    lastHoveredSlot = null;
-                    hoveredSlots.clear();
-                }
+            if (!(event.getNewScreen() instanceof AbstractContainerScreen<?>)) {
+                onGuiClose();
                 return;
             }
-            if (!NEAConfig.isBlacklisted(event.getGui())) {
-                lastHoveredGui = (GuiContainer) event.getGui();
+            if (!NEAConfig.isBlacklisted(event.getNewScreen())) {
+                lastHoveredGui = (AbstractContainerScreen<?>) event.getNewScreen();
                 lastHoveredSlot = null;
                 hoveredSlots.clear();
             }
         }
+    }
+
+    public static void onGuiClose() {
+        lastHoveredGui = null;
+        lastHoveredSlot = null;
+        hoveredSlots.clear();
     }
 
     private static void startAnimation(Slot slot, boolean grow) {
@@ -63,7 +62,7 @@ public class ItemHoverAnimation {
         }
     }
 
-    public static float getRenderScale(GuiContainer gui, Slot slot) {
+    public static float getRenderScale(AbstractContainerScreen<?> gui, Slot slot) {
         if (lastHoveredGui != gui || !isAnimating(slot) || NEAConfig.isBlacklisted(gui)) return 1f;
         float min = 1f, max = 1.25f;
         long slotTime = hoveredSlots.getLong(slot);

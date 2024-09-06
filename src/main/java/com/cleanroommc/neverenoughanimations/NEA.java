@@ -1,109 +1,99 @@
 package com.cleanroommc.neverenoughanimations;
 
-import com.cleanroommc.neverenoughanimations.animations.ItemHoverAnimation;
-import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
-import com.cleanroommc.neverenoughanimations.animations.ItemPickupThrowAnimation;
-import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
+import com.cleanroommc.neverenoughanimations.animations.*;
+import com.cleanroommc.neverenoughanimations.config.ModConfigMagic;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.neoforged.neoforge.common.NeoForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 
-@Mod(modid = Tags.MODID,
-     version = Tags.VERSION,
-     name = Tags.MODNAME,
-     acceptedMinecraftVersions = "[1.12.2]",
-     clientSideOnly = true,
-     dependencies = "required:mixinbooter@[8.8,);")
+@Mod(value = NEA.MODID, dist = Dist.CLIENT)
 public class NEA {
 
-    public static final Logger LOGGER = LogManager.getLogger(Tags.MODID);
-    private static boolean itemBordersLoaded = false, jeiLoaded = false, heiLoaded = false;
+    public static final String MODID = Tags.MODID;
+
+    public static final Logger LOGGER = LogManager.getLogger(MODID);
     private static int mouseX, mouseY;
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(this);
-        itemBordersLoaded = Loader.isModLoaded("itemborders");
-        jeiLoaded = Loader.isModLoaded("jei");
-        if (jeiLoaded) {
-            ModContainer mod = Loader.instance().getIndexedModList().get("jei");
-            heiLoaded = "Had Enough Items".equals(mod.getName());
+    public NEA(IEventBus eventBus, ModContainer container) {
+        eventBus.addListener(this::commonSetup);
+        eventBus.addListener(this::onLoadConfig);
+
+        NeoForge.EVENT_BUS.register(this);
+
+        container.registerConfig(ModConfig.Type.CLIENT, ModConfigMagic.create(NEAConfig.class));
+        container.registerExtensionPoint(IConfigScreenFactory.class, (modContainer, screen) -> new ConfigurationScreen(container, screen));
+    }
+
+    private void commonSetup(final FMLCommonSetupEvent event) {}
+
+    private void onLoadConfig(final ModConfigEvent event) {
+        if (event.getConfig().getModId().equals(MODID)) {
+            ModConfigMagic.load();
         }
     }
 
     @SubscribeEvent
-    public void onGuiTick(TickEvent.ClientTickEvent event) {
+    public void onGuiTickPre(ClientTickEvent.Pre event) {
         OpeningAnimation.checkGuiToClose();
-        if (event.phase == TickEvent.Phase.END) return;
+        HotbarAnimation.preTick();
+    }
+
+    @SubscribeEvent
+    public void onGuiTickPost(ClientTickEvent.Post event) {
+        OpeningAnimation.checkGuiToClose();
         ItemHoverAnimation.onGuiTick();
+        HotbarAnimation.postTick();
     }
 
     @SubscribeEvent
-    public void onConfigChanged(ConfigChangedEvent event) {
-        if (event.getModID().equals(Tags.MODID)) {
-            NEAConfig.blacklistCache.clear();
-            ConfigManager.sync(Tags.MODID, Config.Type.INSTANCE);
-        }
-    }
-
-    @SubscribeEvent
-    public void onGuiOpen(GuiOpenEvent event) {
-        if (OpeningAnimation.onGuiOpen(event)) return;
+    public void onGuiOpen(ScreenEvent.Opening event) {
         ItemHoverAnimation.onGuiOpen(event);
         ItemMoveAnimation.onGuiOpen(event);
         ItemPickupThrowAnimation.onGuiOpen(event);
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
-    public void onGuiDrawPre(GuiScreenEvent.DrawScreenEvent.Pre event) {
+    @SubscribeEvent
+    public void onGuiClose(ScreenEvent.Closing event) {
+        ItemHoverAnimation.onGuiClose();
+        ItemMoveAnimation.onGuiClose(event.getScreen());
+        ItemPickupThrowAnimation.onGuiClose();
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
+    public void onGuiDrawPre(ScreenEvent.Render.Pre event) {
         mouseX = event.getMouseX();
         mouseY = event.getMouseY();
-        if (NEAConfig.moveAnimationTime > 0 && event.getGui() instanceof GuiContainer) {
-            GlStateManager.pushMatrix();
-        }
+        event.getGuiGraphics().pose().pushPose();
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onGuiDrawPost(GuiScreenEvent.DrawScreenEvent.Post event) {
-        if (NEAConfig.moveAnimationTime > 0 && event.getGui() instanceof GuiContainer container) {
-            GlStateManager.popMatrix();
-            OpeningAnimation.getScale(container); // make sure screens don't get stuck in case they don't render the scale
-        }
-    }
-
-    @SubscribeEvent
-    public void drawDebugInfo(GuiScreenEvent.BackgroundDrawnEvent event) {
-        if (event.getGui() instanceof GuiContainer container) {
-            drawScreenDebug(container, event.getMouseX(), event.getMouseY());
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onGuiBackgroundDrawn(GuiScreenEvent.BackgroundDrawnEvent event) {
-        if (NEAConfig.moveAnimationTime > 0 && event.getGui() instanceof GuiContainer container) {
-            OpeningAnimation.handleScale(container, true);
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onGuiDrawPost(ScreenEvent.Render.Post event) {
+        event.getGuiGraphics().pose().popPose();
+        if (event.getScreen() instanceof AbstractContainerScreen<?> container) {
+            OpeningAnimation.getValue(container); // make sure screens don't get stuck in case they don't render the scale
         }
     }
 
@@ -115,53 +105,61 @@ public class NEA {
         return mouseY;
     }
 
-    public static void drawScreenDebug(GuiContainer container, int mouseX, int mouseY) {
-        if (!FMLLaunchHandler.isDeobfuscatedEnvironment() || container.getClass().getName().contains("modularui")) return;
-        GlStateManager.disableDepth();
-        GlStateManager.disableLighting();
-        GlStateManager.enableBlend();
+    public static void drawScreenDebug(GuiGraphics graphics, AbstractContainerScreen<?> container, int mouseX, int mouseY) {
+        if (FMLLoader.isProduction() || container.getClass().getName().contains("modularui")) return;
+        RenderSystem.disableDepthTest();
+        RenderSystem.disableBlend();
 
         int screenH = container.height;
         int color = new java.awt.Color(180, 40, 115).getRGB();
         int lineY = screenH - 13;
-        FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
-        container.drawString(fr, "Mouse Pos: " + mouseX + ", " + mouseY, 5, lineY, color);
+        Font fr = Minecraft.getInstance().font;
+        graphics.drawString(fr, "Mouse Pos: " + mouseX + ", " + mouseY, 5, lineY, color);
         lineY -= 11;
-        container.drawString(fr, "Rel. Mouse Pos: " + (mouseX - container.getGuiLeft()) + ", " + (mouseY - container.getGuiTop()), 5, lineY,
-                             color);
+        graphics.drawString(fr, "Rel. Mouse Pos: " + (mouseX - container.getGuiLeft()) + ", " + (mouseY - container.getGuiTop()), 5, lineY,
+                            color);
         IItemLocation slot = IItemLocation.of(container.getSlotUnderMouse());
         if (slot != null) {
             lineY -= 11;
-            container.drawString(fr, "Pos: " + slot.nea$getX() + ", " + slot.nea$getY(), 5, lineY, color);
+            graphics.drawString(fr, "Pos: " + slot.nea$getX() + ", " + slot.nea$getY(), 5, lineY, color);
             lineY -= 11;
-            container.drawString(fr, "Class: " + slot.getClass().getSimpleName(), 5, lineY, color);
+            graphics.drawString(fr, "Class: " + slot.getClass().getSimpleName(), 5, lineY, color);
             lineY -= 11;
-            container.drawString(fr, "Slot Number: " + slot.nea$getSlotNumber(), 5, lineY, color);
+            graphics.drawString(fr, "Slot Number: " + slot.nea$getSlotNumber(), 5, lineY, color);
             lineY -= 11;
         }
         // dot at mouse pos
-        Gui.drawRect(mouseX, mouseY, mouseX + 1, mouseY + 1, new Color(10, 230, 10, (int) (0.8 * 155)).getRGB());
+        graphics.fill(mouseX, mouseY, mouseX + 1, mouseY + 1, new Color(10, 230, 10, (int) (0.8 * 155)).getRGB());
 
-        GlStateManager.color(1f, 1f, 1f, 1f);
-        GlStateManager.enableLighting();
-        GlStateManager.enableDepth();
-        GlStateManager.enableRescaleNormal();
-        RenderHelper.enableStandardItemLighting();
-    }
-
-    public static boolean isItemBordersLoaded() {
-        return itemBordersLoaded;
-    }
-
-    public static boolean isJeiLoaded() {
-        return jeiLoaded;
-    }
-
-    public static boolean isHeiLoaded() {
-        return heiLoaded;
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.enableDepthTest();
     }
 
     public static long time() {
         return System.nanoTime() / 1_000_000L;
+    }
+
+    public static int withAlpha(int argb, float alpha) {
+        return withAlpha(argb, (int) (alpha * 255));
+    }
+
+    public static int withAlpha(int argb, int alpha) {
+        argb &= ~(0xFF << 24);
+        return argb | alpha << 24;
+    }
+
+    public static float getAlphaF(int argb) {
+        return getAlpha(argb) / 255f;
+    }
+
+    public static int getAlpha(int argb) {
+        return argb >> 24 & 255;
+    }
+
+    public static void drawItem(ItemStack stack, GuiGraphics graphics, Font font, int x, int y) {
+        var font1 = IClientItemExtensions.of(stack).getFont(stack, IClientItemExtensions.FontContext.ITEM_COUNT);
+        if (font1 != null) font = font1;
+        graphics.renderItem(stack, x, y);
+        graphics.renderItemDecorations(font, stack, x, y);
     }
 }

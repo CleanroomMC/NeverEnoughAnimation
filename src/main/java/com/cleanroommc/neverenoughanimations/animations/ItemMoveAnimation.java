@@ -8,16 +8,13 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -25,12 +22,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@SideOnly(Side.CLIENT)
 public class ItemMoveAnimation {
 
     // all itemstack that are currently being animated
     private static final Int2ObjectOpenHashMap<List<ItemMovePacket>> movingItemsBySource = new Int2ObjectOpenHashMap<>();
-    private static GuiContainer lastGui = null;
+    private static AbstractContainerScreen<?> lastGui = null;
     // when a stack is moving the stack is actually in the target slot all the time, so we need to trick the player
     // into thinking there is nothing
     private static final ObjectArrayList<ItemStack> virtualStacks = new ObjectArrayList<>(256);
@@ -39,31 +35,36 @@ public class ItemMoveAnimation {
     private static long lastAnimation = 0;
 
     @ApiStatus.Internal
-    public static void onGuiOpen(GuiOpenEvent event) {
+    public static void onGuiOpen(ScreenEvent.Opening event) {
         if (NEAConfig.moveAnimationTime == 0) return;
-        if (!(event.getGui() instanceof GuiContainer)) {
-            if (lastGui != null) {
-                lastGui = null;
-                movingItemsBySource.clear();
-            }
+        if (!(event.getNewScreen() instanceof AbstractContainerScreen<?>)) {
+            onGuiClose(lastGui);
             return;
         }
-        if (!NEAConfig.isBlacklisted(event.getGui())) {
-            lastGui = (GuiContainer) event.getGui();
+        if (!NEAConfig.isBlacklisted(event.getNewScreen())) {
+            lastGui = (AbstractContainerScreen<?>) event.getNewScreen();
             movingItemsBySource.clear();
             virtualStacks.clear();
             virtualStacksUser.clear();
         }
     }
 
-    public static ItemStack getVirtualStack(GuiContainer container, Slot slot) {
+    public static void onGuiClose(Screen screen) {
+        if (lastGui == screen) {
+            lastGui = null;
+            movingItemsBySource.clear();
+        }
+    }
+
+    public static ItemStack getVirtualStack(AbstractContainerScreen<?> container, Slot slot) {
         return getVirtualStack(container, IItemLocation.of(slot));
     }
 
-    public static ItemStack getVirtualStack(GuiContainer container, IItemLocation slot) {
-        return container == lastGui && !NEAConfig.isBlacklisted(
-                container) && virtualStacks.size() > slot.nea$getSlotNumber() + 1 && virtualStacksUser.getInt(
-                slot.nea$getSlotNumber() + 1) > 0 ? virtualStacks.get(slot.nea$getSlotNumber() + 1) : null;
+    public static ItemStack getVirtualStack(AbstractContainerScreen<?> container, IItemLocation slot) {
+        return container == lastGui &&
+                       !NEAConfig.isBlacklisted(container) &&
+                       virtualStacks.size() > slot.nea$getSlotNumber() + 1 &&
+                       virtualStacksUser.getInt(slot.nea$getSlotNumber() + 1) > 0 ? virtualStacks.get(slot.nea$getSlotNumber() + 1) : null;
     }
 
     @ApiStatus.Internal
@@ -107,8 +108,9 @@ public class ItemMoveAnimation {
      */
     @ApiStatus.Internal
     public static Pair<List<Slot>, List<ItemStack>> getCandidates(Slot in, List<Slot> allSlots) {
-        if (NEAConfig.moveAnimationTime == 0 || NEAConfig.isBlacklisted(
-                Minecraft.getMinecraft().currentScreen) || NEA.time() - lastAnimation <= 10) {
+        if (NEAConfig.moveAnimationTime == 0 ||
+                NEAConfig.isBlacklisted(Minecraft.getInstance().screen) ||
+                NEA.time() - lastAnimation <= 10) {
             return null;
         }
         List<Slot> slots = new ArrayList<>(allSlots.size());
@@ -116,11 +118,11 @@ public class ItemMoveAnimation {
         ItemStack item = IItemLocation.of(in).nea$getStack();
         for (Slot slot : allSlots) {
             if (in == slot) continue;
-            ItemStack other = slot.getStack();
+            ItemStack other = slot.getItem();
             if (other.isEmpty()) {
                 slots.add(slot);
                 stacks.add(ItemStack.EMPTY);
-            } else if (ItemHandlerHelper.canItemStacksStack(item, other)) {
+            } else if (ItemStack.isSameItemSameComponents(item, other)) {
                 slots.add(slot);
                 stacks.add(other.copy());
             }
@@ -137,7 +139,7 @@ public class ItemMoveAnimation {
         List<Slot> slots = candidates.getLeft();
         List<ItemStack> stacks = candidates.getRight();
         // total amount of moved items
-        int total = oldSource.getCount() - source.getStack().getCount();
+        int total = oldSource.getCount() - source.getItem().getCount();
         if (total <= 0) return;
         List<ItemMovePacket> packets = new ArrayList<>();
         Int2ObjectArrayMap<ItemStack> stagedVirtualStacks = new Int2ObjectArrayMap<>();
@@ -157,7 +159,7 @@ public class ItemMoveAnimation {
                     total -= newStack.getCount();
                     stagedVirtualStacks.put(slot.nea$getSlotNumber(), oldStack);
                 }
-            } else if (ItemHandlerHelper.canItemStacksStack(newStack, oldStack)) {
+            } else if (ItemStack.isSameItemSameComponents(newStack, oldStack)) {
                 // the stackable check is not really necessary but is still here for safety
                 if (oldStack.getCount() < newStack.getCount()) {
                     // stackable and amount changed -> found
@@ -195,14 +197,14 @@ public class ItemMoveAnimation {
     /**
      * Render all animated item stacks.
      */
-    public static void drawAnimations() {
-        drawAnimations(Minecraft.getMinecraft().getRenderItem(), Minecraft.getMinecraft().fontRenderer);
-    }
+    /*public static void drawAnimations() {
+        drawAnimations(Minecraft.getInstance().getItemRenderer(), Minecraft.getInstance().font);
+    }*/
 
     /**
      * Render all animated item stacks.
      */
-    public static void drawAnimations(RenderItem itemRender, FontRenderer fontRenderer) {
+    public static void drawAnimations(GuiGraphics graphics, Font font) {
         for (var iter = movingItemsBySource.values().iterator(); iter.hasNext(); ) {
             List<ItemMovePacket> packets = iter.next();
             for (Iterator<ItemMovePacket> iterator = packets.iterator(); iterator.hasNext(); ) {
@@ -215,11 +217,8 @@ public class ItemMoveAnimation {
                 }
                 int x = packet.getDrawX(val);
                 int y = packet.getDrawY(val);
-                GlStateManager.translate(0, 0, 32f);
-                FontRenderer font = packet.getMovingStack().getItem().getFontRenderer(packet.getMovingStack());
-                if (font == null) font = fontRenderer;
-                itemRender.renderItemAndEffectIntoGUI(Minecraft.getMinecraft().player, packet.getMovingStack(), x, y);
-                itemRender.renderItemOverlayIntoGUI(font, packet.getMovingStack(), x, y, null);
+                graphics.pose().translate(0, 0, 32f);
+                NEA.drawItem(packet.getMovingStack(), graphics, font, x, y);
                 if (end) {
                     ItemMoveAnimation.updateVirtualStack(packet.getTarget().nea$getSlotNumber(), packet.getTargetStack(), -1);
                     if (packets.size() == 1) {

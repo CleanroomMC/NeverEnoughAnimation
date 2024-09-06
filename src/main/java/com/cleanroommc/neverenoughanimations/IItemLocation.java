@@ -1,9 +1,9 @@
 package com.cleanroommc.neverenoughanimations;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 public interface IItemLocation {
 
@@ -24,7 +24,7 @@ public interface IItemLocation {
         @Override
         public int nea$getX() {
             int guiX = 0;
-            if (Minecraft.getMinecraft().currentScreen instanceof GuiContainer container) {
+            if (Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> container) {
                 guiX = container.getGuiLeft();
             }
             return NEA.getMouseX() - 8 - guiX;
@@ -33,7 +33,7 @@ public interface IItemLocation {
         @Override
         public int nea$getY() {
             int guiY = 0;
-            if (Minecraft.getMinecraft().currentScreen instanceof GuiContainer container) {
+            if (Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> container) {
                 guiY = container.getGuiTop();
             }
             return NEA.getMouseY() - 8 - guiY;
@@ -46,7 +46,11 @@ public interface IItemLocation {
 
         @Override
         public ItemStack nea$getStack() {
-            return Minecraft.getMinecraft().player.inventory.getItemStack();
+            var screen = Minecraft.getInstance().screen;
+            if (screen instanceof AbstractContainerScreen<?> containerScreen) {
+                return containerScreen.getMenu().getCarried();
+            }
+            return ItemStack.EMPTY;
         }
     };
 

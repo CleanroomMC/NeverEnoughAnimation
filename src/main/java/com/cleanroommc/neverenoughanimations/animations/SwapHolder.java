@@ -4,12 +4,12 @@ import com.cleanroommc.neverenoughanimations.IItemLocation;
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.PlayerInvWrapper;
-import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.wrapper.PlayerInvWrapper;
+import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
 
 import java.util.List;
 
@@ -23,15 +23,15 @@ public class SwapHolder {
     private ItemStack hotbarStack;
 
     public boolean init(Slot hoveredSlot, List<Slot> slots, int hotbarIndex) {
-        if (NEAConfig.isBlacklisted(Minecraft.getMinecraft().currentScreen)) return false;
+        if (NEAConfig.isBlacklisted(Minecraft.getInstance().screen)) return false;
         this.targetSlot = hoveredSlot;
         this.hotbarSlot = findHotbarSlot(slots, hotbarIndex);
         if (this.hotbarSlot == null) {
             reset();
             return false;
         }
-        this.targetStack = this.targetSlot.getStack();
-        this.hotbarStack = this.hotbarSlot.getStack();
+        this.targetStack = this.targetSlot.getItem();
+        this.hotbarStack = this.hotbarSlot.getItem();
         if (this.targetStack.isEmpty() && this.hotbarStack.isEmpty()) {
             reset();
             return false;
@@ -98,7 +98,10 @@ public class SwapHolder {
     public static Slot findHotbarSlot(List<Slot> slots, int index) {
         for (Slot slot : slots) {
             if (slot.getSlotIndex() != index) continue;
-            if (slot.inventory instanceof InventoryPlayer || (slot instanceof SlotItemHandler slotItemHandler && (slotItemHandler.getItemHandler() instanceof PlayerMainInvWrapper || slotItemHandler.getItemHandler() instanceof PlayerInvWrapper))) {
+            if (slot.container instanceof Inventory ||
+                    (slot instanceof SlotItemHandler slotItemHandler &&
+                             (slotItemHandler.getItemHandler() instanceof PlayerMainInvWrapper ||
+                                      slotItemHandler.getItemHandler() instanceof PlayerInvWrapper))) {
                 return slot;
             }
         }

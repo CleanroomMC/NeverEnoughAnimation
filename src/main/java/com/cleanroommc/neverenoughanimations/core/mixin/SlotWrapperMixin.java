@@ -1,22 +1,24 @@
 package com.cleanroommc.neverenoughanimations.core.mixin;
 
 import com.cleanroommc.neverenoughanimations.IItemLocation;
+import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(Slot.class)
-public abstract class SlotMixin implements IItemLocation {
+@Mixin(targets = "net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen$SlotWrapper")
+public abstract class SlotWrapperMixin extends Slot implements IItemLocation {
 
-    @Shadow public abstract ItemStack getItem();
+    @Shadow @Final Slot target;
 
-    @Shadow @Final public int x;
+    @Shadow public abstract @NotNull ItemStack getItem();
 
-    @Shadow @Final public int y;
-
-    @Shadow public int index;
+    public SlotWrapperMixin(Container container, int slot, int x, int y) {
+        super(container, slot, x, y);
+    }
 
     @Override
     public int nea$getX() {
@@ -30,7 +32,7 @@ public abstract class SlotMixin implements IItemLocation {
 
     @Override
     public int nea$getSlotNumber() {
-        return index;
+        return target.index;
     }
 
     @Override
