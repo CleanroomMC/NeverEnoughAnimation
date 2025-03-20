@@ -1,9 +1,7 @@
 package com.cleanroommc.neverenoughanimations;
 
-import com.cleanroommc.neverenoughanimations.api.IAnimatedScreen;
 import com.cleanroommc.neverenoughanimations.util.Interpolation;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.Config;
 
 @Config(modid = Tags.MODID)
@@ -48,10 +46,16 @@ public class NEAConfig {
     @Config.Name("Opening/Closing animation time")
     @Config.SlidingOption
     @Config.RangeInt(min = 0, max = 1000)
-    @Config.Comment("How many millieseconds it takes until the gui is fully opened. 0 to disable.")
-    public static int openingAnimationTime = 60;
+    @Config.Comment("How many millieseconds it takes until the gui is fully opened. 0 to disable. 200 and lower is recommended.")
+    public static int openingAnimationTime = 90;
     @Config.Name("Opening/Closing animation easing curve")
     public static Interpolation openingAnimationCurve = Interpolation.SINE_OUT;
+
+    @Config.Name("Opening/Closing start/end scale")
+    @Config.SlidingOption
+    @Config.RangeDouble(min = 0.0, max = 1.0)
+    @Config.Comment("The scale at which the opening animation starts. What looks good depends on the animation time. Rule of thumb is the shorter the animation time, the larger the start scale.")
+    public static float openingStartScale = 0.9f;
 
     @Config.Name("Gui class animation blacklist")
     @Config.Comment({"Add class names (works with * at the end) which should be blacklisted from any animations.",

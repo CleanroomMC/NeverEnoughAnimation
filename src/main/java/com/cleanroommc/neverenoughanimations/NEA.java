@@ -88,11 +88,6 @@ public class NEA {
         ItemHoverAnimation.onGuiOpen(event);
         ItemMoveAnimation.onGuiOpen(event);
         ItemPickupThrowAnimation.onGuiOpen(event);
-        if (event.getGui() != null) {
-            LOGGER.info("Opening screen {}", event.getGui().getClass());
-        } else {
-            LOGGER.info("Closing screen");
-        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
@@ -131,10 +126,17 @@ public class NEA {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void mouseInput(GuiScreenEvent.MouseInputEvent.Pre event) {
-        if (Mouse.getEventButton() >= 0) {
-            LOGGER.info("Mouse Input: button {}, pressed {}, ", Mouse.getEventButton(), Mouse.getEventButtonState());
+        if (OpeningAnimation.isAnimatingClose(event.getGui())) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void mouseInput(GuiScreenEvent.KeyboardInputEvent.Pre event) {
+        if (OpeningAnimation.isAnimatingClose(event.getGui())) {
+            event.setCanceled(true);
         }
     }
 
@@ -151,10 +153,12 @@ public class NEA {
     }
 
     public static float getCurrentOpenAnimationValue() {
+        // only works while rendering gui
         return openAnimationValue;
     }
 
     public static boolean isCurrentGuiAnimating() {
+        // only works while rendering gui
         return currentDrawnScreen != null && openAnimationValue < 1f;
     }
 

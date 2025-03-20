@@ -23,4 +23,12 @@ public class MinecraftMixin {
             NEA.onFrameTick();
         }
     }
+
+    // TODO maybe allow opening other uis while the current one is closing
+    /*@WrapOperation(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;handleInput()V"))
+    public void cancelInteraction(GuiScreen instance, Operation<Void> original) {
+        if (!OpeningAnimation.isAnimatingClose(instance)) {
+            original.call(instance);
+        }
+    }*/
 }
