@@ -9,7 +9,7 @@ public class NEAConfig {
 
     @Config.Name("Hover animation time")
     @Config.SlidingOption
-    @Config.RangeInt(min = 0, max = 1000)
+    @Config.RangeInt(min = 0, max = 500)
     @Config.Comment("How many millieseconds it takes until an item is scaled to its full size on hover. 0 to disable.")
     public static int hoverAnimationTime = 100;
     @Config.Name("Hover animation easing curve")
@@ -21,7 +21,7 @@ public class NEAConfig {
 
     @Config.Name("Item move animation time")
     @Config.SlidingOption
-    @Config.RangeInt(min = 0, max = 1000)
+    @Config.RangeInt(min = 0, max = 500)
     @Config.Comment("How many millieseconds it takes until an item has moved to its target (activated on shift click). 0 to disable.")
     public static int moveAnimationTime = 100;
     @Config.Name("Item move animation easing curve")
@@ -29,7 +29,7 @@ public class NEAConfig {
 
     @Config.Name("Item (dis)appear animation time")
     @Config.SlidingOption
-    @Config.RangeInt(min = 0, max = 1000)
+    @Config.RangeInt(min = 0, max = 500)
     @Config.Comment("How many millieseconds it takes until an item has moved to its target (activated on shift click). 0 to disable.")
     public static int appearAnimationTime = 100;
     @Config.Name("Item (dis)appear animation easing curve")
@@ -37,7 +37,7 @@ public class NEAConfig {
 
     @Config.Name("Hotbar animation time")
     @Config.SlidingOption
-    @Config.RangeInt(min = 0, max = 1000)
+    @Config.RangeInt(min = 0, max = 500)
     @Config.Comment("How many millieseconds it takes until the current item marker in the hotbar moved to its new location. 0 to disable.")
     public static int hotbarAnimationTime = 100;
     @Config.Name("Hotbar animation easing curve")
@@ -45,7 +45,7 @@ public class NEAConfig {
 
     @Config.Name("Opening/Closing animation time")
     @Config.SlidingOption
-    @Config.RangeInt(min = 0, max = 1000)
+    @Config.RangeInt(min = 0, max = 500)
     @Config.Comment("How many millieseconds it takes until the gui is fully opened. 0 to disable. 200 and lower is recommended.")
     public static int openingAnimationTime = 90;
     @Config.Name("Opening/Closing animation easing curve")
