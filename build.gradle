@@ -159,9 +159,6 @@ dependencies {
     implementation "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
     implementation 'curse.maven:mouse_tweaks-60089:5637846'
-    implementation 'curse.maven:item_borders-513769:5591010'
-    implementation 'curse.maven:iceberg-520110:5625109'
-    implementation 'curse.maven:prism_lib-638111:5625115'
     // trashslot works without special compat
 
     // Example mod dependency using a mod jar from ./libs with a flat dir repository

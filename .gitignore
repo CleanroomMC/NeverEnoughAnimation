@@ -1,5 +1,7 @@
 .nopublish
 
+runs/
+
 ### Windows ###
 
 thumbs.db
