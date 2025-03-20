@@ -1,5 +1,6 @@
-package com.cleanroommc.neverenoughanimations;
+package com.cleanroommc.neverenoughanimations.api;
 
+import com.cleanroommc.neverenoughanimations.NEA;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;

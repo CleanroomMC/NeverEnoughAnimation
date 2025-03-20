@@ -5,11 +5,16 @@
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "client": [
+    "BufferBuilderMixin",
     "ContainerMixin",
     "CreativeSlotMixin",
+    "GlStateManagerMixin",
     "GuiContainerMixin",
     "GuiIngameMixin",
+    "GuiScreenMixin",
     "InventoryPlayerMixin",
+    "MinecraftMixin",
+    "RenderItemMixin",
     "SlotMixin"
   ],
   "mixins": [

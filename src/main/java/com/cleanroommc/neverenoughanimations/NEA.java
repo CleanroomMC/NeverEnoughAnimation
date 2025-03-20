@@ -4,12 +4,15 @@ import com.cleanroommc.neverenoughanimations.animations.ItemHoverAnimation;
 import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
 import com.cleanroommc.neverenoughanimations.animations.ItemPickupThrowAnimation;
 import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
+import com.cleanroommc.neverenoughanimations.api.IItemLocation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.util.Timer;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -27,6 +30,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 
@@ -40,7 +45,12 @@ public class NEA {
 
     public static final Logger LOGGER = LogManager.getLogger(Tags.MODID);
     private static boolean itemBordersLoaded = false, jeiLoaded = false, heiLoaded = false;
+
+    private static GuiScreen currentDrawnScreen = null;
+    private static float openAnimationValue = 1f;
     private static int mouseX, mouseY;
+
+    public static final Timer timer60Tps = new Timer(60f);
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -53,9 +63,13 @@ public class NEA {
         }
     }
 
+    public static void onFrameTick() {
+        OpeningAnimation.checkGuiToClose();
+    }
+
     @SubscribeEvent
     public void onGuiTick(TickEvent.ClientTickEvent event) {
-        OpeningAnimation.checkGuiToClose();
+        //OpeningAnimation.checkGuiToClose();
         if (event.phase == TickEvent.Phase.END) return;
         ItemHoverAnimation.onGuiTick();
     }
@@ -74,12 +88,20 @@ public class NEA {
         ItemHoverAnimation.onGuiOpen(event);
         ItemMoveAnimation.onGuiOpen(event);
         ItemPickupThrowAnimation.onGuiOpen(event);
+        if (event.getGui() != null) {
+            LOGGER.info("Opening screen {}", event.getGui().getClass());
+        } else {
+            LOGGER.info("Closing screen");
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public void onGuiDrawPre(GuiScreenEvent.DrawScreenEvent.Pre event) {
         mouseX = event.getMouseX();
         mouseY = event.getMouseY();
+        currentDrawnScreen = event.getGui();
+        // we are caching this value for the current gui since its potentially requested very often
+        openAnimationValue = OpeningAnimation.getValue(currentDrawnScreen);
         if (NEAConfig.moveAnimationTime > 0 && event.getGui() instanceof GuiContainer) {
             GlStateManager.pushMatrix();
         }
@@ -91,6 +113,8 @@ public class NEA {
             GlStateManager.popMatrix();
             OpeningAnimation.getScale(container); // make sure screens don't get stuck in case they don't render the scale
         }
+        currentDrawnScreen = null;
+        openAnimationValue = 1f;
     }
 
     @SubscribeEvent
@@ -102,8 +126,15 @@ public class NEA {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onGuiBackgroundDrawn(GuiScreenEvent.BackgroundDrawnEvent event) {
-        if (NEAConfig.moveAnimationTime > 0 && event.getGui() instanceof GuiContainer container) {
-            OpeningAnimation.handleScale(container, true);
+        if (NEAConfig.moveAnimationTime > 0) {
+            OpeningAnimation.handleScale(event.getGui(), true);
+        }
+    }
+
+    @SubscribeEvent
+    public void mouseInput(GuiScreenEvent.MouseInputEvent.Pre event) {
+        if (Mouse.getEventButton() >= 0) {
+            LOGGER.info("Mouse Input: button {}, pressed {}, ", Mouse.getEventButton(), Mouse.getEventButtonState());
         }
     }
 
@@ -113,6 +144,18 @@ public class NEA {
 
     public static int getMouseY() {
         return mouseY;
+    }
+
+    public static @Nullable GuiScreen getCurrentDrawnScreen() {
+        return currentDrawnScreen;
+    }
+
+    public static float getCurrentOpenAnimationValue() {
+        return openAnimationValue;
+    }
+
+    public static boolean isCurrentGuiAnimating() {
+        return currentDrawnScreen != null && openAnimationValue < 1f;
     }
 
     public static void drawScreenDebug(GuiContainer container, int mouseX, int mouseY) {
@@ -163,5 +206,18 @@ public class NEA {
 
     public static long time() {
         return System.nanoTime() / 1_000_000L;
+    }
+
+    public static int getAlpha(int argb) {
+        return argb >> 24 & 255;
+    }
+
+    public static int withAlpha(int argb, int alpha) {
+        argb &= ~(0xFF << 24);
+        return argb | alpha << 24;
+    }
+
+    public static int withAlpha(int argb, float alpha) {
+        return withAlpha(argb, (int) (alpha * 255));
     }
 }

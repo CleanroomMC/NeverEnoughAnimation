@@ -1,6 +1,6 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
-import com.cleanroommc.neverenoughanimations.IItemLocation;
+import com.cleanroommc.neverenoughanimations.api.IItemLocation;
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
@@ -15,7 +15,6 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class ItemPickupThrowAnimation {

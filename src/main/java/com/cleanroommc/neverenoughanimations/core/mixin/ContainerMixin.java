@@ -1,6 +1,6 @@
 package com.cleanroommc.neverenoughanimations.core.mixin;
 
-import com.cleanroommc.neverenoughanimations.IItemLocation;
+import com.cleanroommc.neverenoughanimations.api.IItemLocation;
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;

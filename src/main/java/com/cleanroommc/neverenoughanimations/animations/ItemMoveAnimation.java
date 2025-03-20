@@ -1,6 +1,6 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
-import com.cleanroommc.neverenoughanimations.IItemLocation;
+import com.cleanroommc.neverenoughanimations.api.IItemLocation;
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;

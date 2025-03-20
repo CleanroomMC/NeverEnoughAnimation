@@ -1,6 +1,6 @@
 package com.cleanroommc.neverenoughanimations.core.mixin;
 
-import com.cleanroommc.neverenoughanimations.IItemLocation;
+import com.cleanroommc.neverenoughanimations.api.IItemLocation;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,5 +1,6 @@
 package com.cleanroommc.neverenoughanimations;
 
+import com.cleanroommc.neverenoughanimations.api.IAnimatedScreen;
 import com.cleanroommc.neverenoughanimations.util.Interpolation;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.client.gui.GuiScreen;
@@ -60,7 +61,7 @@ public class NEAConfig {
     @Config.Ignore
     public static Object2BooleanOpenHashMap<Class<?>> blacklistCache = new Object2BooleanOpenHashMap<>();
 
-    public static boolean isBlacklisted(GuiScreen screen) {
+    public static boolean isBlacklisted(Object screen) {
         if (screen == null) return true;
         if (guiAnimationBlacklist.length == 0) return false;
         if (blacklistCache.containsKey(screen.getClass())) return blacklistCache.getBoolean(screen.getClass());

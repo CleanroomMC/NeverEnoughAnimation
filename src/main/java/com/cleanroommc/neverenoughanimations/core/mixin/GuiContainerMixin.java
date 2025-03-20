@@ -1,11 +1,12 @@
 package com.cleanroommc.neverenoughanimations.core.mixin;
 
-import com.cleanroommc.neverenoughanimations.IItemLocation;
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import com.cleanroommc.neverenoughanimations.animations.ItemHoverAnimation;
 import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
 import com.cleanroommc.neverenoughanimations.animations.ItemPickupThrowAnimation;
+import com.cleanroommc.neverenoughanimations.api.IAnimatedScreen;
+import com.cleanroommc.neverenoughanimations.api.IItemLocation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
@@ -16,6 +17,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -23,7 +25,19 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = GuiContainer.class, priority = 950)
-public class GuiContainerMixin extends GuiScreen {
+public abstract class GuiContainerMixin extends GuiScreen implements IAnimatedScreen {
+
+    @Shadow(remap = false)
+    public abstract int getGuiLeft();
+
+    @Shadow(remap = false)
+    public abstract int getGuiTop();
+
+    @Shadow(remap = false)
+    public abstract int getXSize();
+
+    @Shadow(remap = false)
+    public abstract int getYSize();
 
     @Inject(method = "drawSlot",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isEmpty()Z", ordinal = 5, shift = At.Shift.BEFORE))
@@ -118,5 +132,25 @@ public class GuiContainerMixin extends GuiScreen {
             return virtual == null ? stack : virtual;
         }
         return stack;
+    }
+
+    @Override
+    public int nea$getX() {
+        return getGuiLeft();
+    }
+
+    @Override
+    public int nea$getY() {
+        return getGuiTop();
+    }
+
+    @Override
+    public int nea$getWidth() {
+        return getXSize();
+    }
+
+    @Override
+    public int nea$getHeight() {
+        return getYSize();
     }
 }
