@@ -12,18 +12,25 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 public class OpeningAnimation {
 
     public static boolean onGuiOpen(GuiOpenEvent event) {
-        if (event.getGui() instanceof IAnimatedScreen animatedScreen) {
+        if (onGuiOpen(event.getGui())) {
+            event.setCanceled(true);
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean onGuiOpen(GuiScreen screen) {
+        if (screen instanceof IAnimatedScreen animatedScreen) {
             if (Minecraft.getMinecraft().currentScreen == null) {
                 animate(animatedScreen, true);
             }
-        } else if (Minecraft.getMinecraft().currentScreen == lastGui && event.getGui() == null && !shouldCloseLast) {
+        } else if (Minecraft.getMinecraft().currentScreen == lastGui && screen == null && !shouldCloseLast) {
             if (animatedGui == null || getValue(animatedGui) >= 1f || startTime > 0) {
                 // only start close animation when we aren't already closing
                 // if we are currently opening we start at the end of the animation
                 // this can look wonky on long animation times
                 animate(lastGui, false);
             }
-            event.setCanceled(true);
             return true;
         }
         return false;

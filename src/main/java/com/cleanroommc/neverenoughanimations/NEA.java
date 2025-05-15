@@ -4,6 +4,7 @@ import com.cleanroommc.neverenoughanimations.animations.ItemHoverAnimation;
 import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
 import com.cleanroommc.neverenoughanimations.animations.ItemPickupThrowAnimation;
 import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
+import com.cleanroommc.neverenoughanimations.api.IAnimatedScreen;
 import com.cleanroommc.neverenoughanimations.api.IItemLocation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -97,16 +98,16 @@ public class NEA {
         currentDrawnScreen = event.getGui();
         // we are caching this value for the current gui since its potentially requested very often
         openAnimationValue = OpeningAnimation.getValue(currentDrawnScreen);
-        if (NEAConfig.moveAnimationTime > 0 && event.getGui() instanceof GuiContainer) {
+        if (NEAConfig.moveAnimationTime > 0 && event.getGui() instanceof IAnimatedScreen) {
             GlStateManager.pushMatrix();
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onGuiDrawPost(GuiScreenEvent.DrawScreenEvent.Post event) {
-        if (NEAConfig.moveAnimationTime > 0 && event.getGui() instanceof GuiContainer container) {
+        if (NEAConfig.moveAnimationTime > 0 && event.getGui() instanceof IAnimatedScreen screen) {
             GlStateManager.popMatrix();
-            OpeningAnimation.getScale(container); // make sure screens don't get stuck in case they don't render the scale
+            OpeningAnimation.getScale(screen); // make sure screens don't get stuck in case they don't render the scale
         }
         currentDrawnScreen = null;
         openAnimationValue = 1f;
