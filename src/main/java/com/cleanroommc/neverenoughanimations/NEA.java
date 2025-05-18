@@ -6,29 +6,32 @@ import com.cleanroommc.neverenoughanimations.animations.ItemPickupThrowAnimation
 import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
 import com.cleanroommc.neverenoughanimations.api.IAnimatedScreen;
 import com.cleanroommc.neverenoughanimations.api.IItemLocation;
+import com.cleanroommc.neverenoughanimations.util.GlStateManager;
+import com.gtnewhorizon.gtnhlib.config.ConfigException;
+import com.gtnewhorizon.gtnhlib.config.ConfigurationManager;
+import cpw.mods.fml.client.event.ConfigChangedEvent;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.ModContainer;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.Timer;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.ModContainer;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -36,12 +39,14 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 
+import static codechicken.lib.gui.GuiDraw.renderEngine;
+
 @Mod(modid = Tags.MODID,
      version = Tags.VERSION,
      name = Tags.MODNAME,
-     acceptedMinecraftVersions = "[1.12.2]",
-     clientSideOnly = true,
-     dependencies = "required:mixinbooter@[8.8,);")
+     acceptedMinecraftVersions = "[1.7.10,)",
+     dependencies = "required-after:gtnhmixins@[2.0.1,);",
+     guiFactory = "com.cleanroommc.neverenoughanimations.NEAGuiConfigFactory")
 public class NEA {
 
     public static final Logger LOGGER = LogManager.getLogger(Tags.MODID);
@@ -51,9 +56,11 @@ public class NEA {
     private static float openAnimationValue = 1f;
     private static int mouseX, mouseY;
 
+    public static final boolean isDevEnv = (boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
+
     public static final Timer timer60Tps = new Timer(60f);
 
-    @EventHandler
+    @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
         itemBordersLoaded = Loader.isModLoaded("itemborders");
@@ -62,26 +69,23 @@ public class NEA {
             ModContainer mod = Loader.instance().getIndexedModList().get("jei");
             heiLoaded = "Had Enough Items".equals(mod.getName());
         }
+        try {
+            ConfigurationManager.registerConfig(NEAConfig.class);
+        } catch (ConfigException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void onFrameTick() {
         OpeningAnimation.checkGuiToClose();
     }
 
-    @SubscribeEvent
-    public void onGuiTick(TickEvent.ClientTickEvent event) {
+    /*@SubscribeEvent
+    public void onGuiTick(TickEvent event) {
         //OpeningAnimation.checkGuiToClose();
         if (event.phase == TickEvent.Phase.END) return;
-        ItemHoverAnimation.onGuiTick();
-    }
 
-    @SubscribeEvent
-    public void onConfigChanged(ConfigChangedEvent event) {
-        if (event.getModID().equals(Tags.MODID)) {
-            NEAConfig.blacklistCache.clear();
-            ConfigManager.sync(Tags.MODID, Config.Type.INSTANCE);
-        }
-    }
+    }*/
 
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
@@ -93,19 +97,20 @@ public class NEA {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public void onGuiDrawPre(GuiScreenEvent.DrawScreenEvent.Pre event) {
-        mouseX = event.getMouseX();
-        mouseY = event.getMouseY();
-        currentDrawnScreen = event.getGui();
+        mouseX = event.mouseX;
+        mouseY = event.mouseY;
+        currentDrawnScreen = event.gui;
+        ItemHoverAnimation.onGuiTick();
         // we are caching this value for the current gui since its potentially requested very often
         openAnimationValue = OpeningAnimation.getValue(currentDrawnScreen);
-        if (NEAConfig.moveAnimationTime > 0 && event.getGui() instanceof IAnimatedScreen) {
+        if (NEAConfig.moveAnimationTime > 0 && event.gui instanceof IAnimatedScreen) {
             GlStateManager.pushMatrix();
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onGuiDrawPost(GuiScreenEvent.DrawScreenEvent.Post event) {
-        if (NEAConfig.moveAnimationTime > 0 && event.getGui() instanceof IAnimatedScreen screen) {
+        if (NEAConfig.moveAnimationTime > 0 && event.gui instanceof IAnimatedScreen screen) {
             GlStateManager.popMatrix();
             OpeningAnimation.getScale(screen); // make sure screens don't get stuck in case they don't render the scale
         }
@@ -113,7 +118,7 @@ public class NEA {
         openAnimationValue = 1f;
     }
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public void drawDebugInfo(GuiScreenEvent.BackgroundDrawnEvent event) {
         if (event.getGui() instanceof GuiContainer container) {
             drawScreenDebug(container, event.getMouseX(), event.getMouseY());
@@ -139,7 +144,7 @@ public class NEA {
         if (OpeningAnimation.isAnimatingClose(event.getGui())) {
             event.setCanceled(true);
         }
-    }
+    }*/
 
     public static int getMouseX() {
         return mouseX;
@@ -164,7 +169,7 @@ public class NEA {
     }
 
     public static void drawScreenDebug(GuiContainer container, int mouseX, int mouseY) {
-        if (!FMLLaunchHandler.isDeobfuscatedEnvironment() || container.getClass().getName().contains("modularui")) return;
+        /*if (!isDevEnv || container.getClass().getName().contains("modularui")) return;
         GlStateManager.disableDepth();
         GlStateManager.disableLighting();
         GlStateManager.enableBlend();
@@ -194,7 +199,7 @@ public class NEA {
         GlStateManager.enableLighting();
         GlStateManager.enableDepth();
         GlStateManager.enableRescaleNormal();
-        RenderHelper.enableStandardItemLighting();
+        RenderHelper.enableStandardItemLighting();*/
     }
 
     public static boolean isItemBordersLoaded() {

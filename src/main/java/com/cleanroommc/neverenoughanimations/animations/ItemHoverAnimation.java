@@ -2,12 +2,13 @@ package com.cleanroommc.neverenoughanimations.animations;
 
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
+import com.cleanroommc.neverenoughanimations.core.mixin.early.GuiContainerAccessor;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.ApiStatus;
 
 @SideOnly(Side.CLIENT)
@@ -20,7 +21,7 @@ public class ItemHoverAnimation {
     @ApiStatus.Internal
     public static void onGuiOpen(GuiOpenEvent event) {
         if (NEAConfig.hoverAnimationTime > 0) {
-            if (!(event.getGui() instanceof GuiContainer)) {
+            if (!(event.gui instanceof GuiContainer)) {
                 if (lastHoveredGui != null) {
                     lastHoveredGui = null;
                     lastHoveredSlot = null;
@@ -28,8 +29,8 @@ public class ItemHoverAnimation {
                 }
                 return;
             }
-            if (!NEAConfig.isBlacklisted(event.getGui())) {
-                lastHoveredGui = (GuiContainer) event.getGui();
+            if (!NEAConfig.isBlacklisted(event.gui)) {
+                lastHoveredGui = (GuiContainer) event.gui;
                 lastHoveredSlot = null;
                 hoveredSlots.clear();
             }
@@ -47,7 +48,7 @@ public class ItemHoverAnimation {
     @ApiStatus.Internal
     public static void onGuiTick() {
         if (NEAConfig.hoverAnimationTime == 0 || lastHoveredGui == null) return;
-        Slot hoveredSlot = lastHoveredGui.getSlotUnderMouse();
+        Slot hoveredSlot = ((GuiContainerAccessor) lastHoveredGui).getHoveredSlot();
         if (lastHoveredSlot != null && (hoveredSlot == null || hoveredSlot != lastHoveredSlot)) {
             // last slot is no longer hovered
             startAnimation(lastHoveredSlot, false);

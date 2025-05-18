@@ -38,7 +38,7 @@ public class HotbarAnimation {
     }
 
     public static int getX(ScaledResolution sr) {
-        int def = Minecraft.getMinecraft().player.inventory.currentItem;
+        int def = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
         if (NEAConfig.hotbarAnimationTime == 0 || oldIndex < 0 || newIndex < 0) return getX(sr, def);
         if (def != newIndex) {
             // index unexpectedly changed, abort animation

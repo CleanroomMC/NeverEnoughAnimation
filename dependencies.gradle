@@ -38,17 +38,27 @@
  * For more details, see https://docs.gradle.org/8.4/userguide/java_library_plugin.html#sec:java_library_configurations_graph
  */
 dependencies {
+    compileOnly("org.jetbrains:annotations:24.0.1")
+    annotationProcessor("org.jetbrains:annotations:24.0.1")
+
+    implementation("com.github.GTNewHorizons:NotEnoughItems:2.7.44-GTNH:dev")
+    api("com.github.GTNewHorizons:GTNHLib:0.6.22:dev")
+    /*compileOnly("com.github.GTNewHorizons:Hodgepodge:2.6.53:dev") { transitive = false }
+    compileOnly("com.github.GTNewHorizons:GT5-Unofficial:5.09.51.282:dev") { transitive = false }
+    compileOnly("com.github.GTNewHorizons:ModularUI:1.2.18:dev") { transitive = false }
+    compileOnly("thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev")
+
     runtimeOnlyNonPublishable rfg.deobf('curse.maven:top-245211:2667280') // TOP 1.4.28
-    implementation "mezz:jei:4.25.5", { transitive false }
+    //implementation "mezz:jei:4.25.5", { transitive false }
 
-    implementation rfg.deobf("curse.maven:mouse_tweaks_unofficial-461660:4661407")
-    implementation rfg.deobf("curse.maven:trashslot-235577:2722385")
+    //implementation rfg.deobf("curse.maven:mouse_tweaks_unofficial-461660:4661407")
+    //implementation rfg.deobf("curse.maven:trashslot-235577:2722385")
 
-    compileOnlyApi "codechicken:codechickenlib:3.2.3.358", { transitive false }
-    compileOnly rfg.deobf('curse.maven:cofh_core-69162:2920433')
-    compileOnly rfg.deobf('curse.maven:cofh_world-271384:2920434')
-    compileOnly rfg.deobf('curse.maven:thermal_expansion-69163:2926431')
-    compileOnly rfg.deobf('curse.maven:thermal_foundation-222880:2926428')
-    compileOnly rfg.deobf('curse.maven:redstone_flux-270789:2920436')
+    //compileOnlyApi "codechicken:codechickenlib:3.2.3.358", { transitive false }
+    //compileOnly rfg.deobf('curse.maven:cofh_core-69162:2920433')
+    //compileOnly rfg.deobf('curse.maven:cofh_world-271384:2920434')
+    //compileOnly rfg.deobf('curse.maven:thermal_expansion-69163:2926431')
+    //compileOnly rfg.deobf('curse.maven:thermal_foundation-222880:2926428')
+    //compileOnly rfg.deobf('curse.maven:redstone_flux-270789:2920436') */
 
 }

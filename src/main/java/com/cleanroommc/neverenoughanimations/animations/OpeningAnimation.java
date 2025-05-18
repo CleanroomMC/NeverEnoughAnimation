@@ -3,16 +3,16 @@ package com.cleanroommc.neverenoughanimations.animations;
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import com.cleanroommc.neverenoughanimations.api.IAnimatedScreen;
+import com.cleanroommc.neverenoughanimations.util.GlStateManager;
 import com.cleanroommc.neverenoughanimations.util.Interpolations;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.client.event.GuiOpenEvent;
 
 public class OpeningAnimation {
 
     public static boolean onGuiOpen(GuiOpenEvent event) {
-        if (onGuiOpen(event.getGui())) {
+        if (onGuiOpen(event.gui)) {
             event.setCanceled(true);
             return true;
         }

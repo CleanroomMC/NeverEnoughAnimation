@@ -1,13 +1,13 @@
 package com.cleanroommc.neverenoughanimations.core;
 
-import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import com.gtnewhorizon.gtnhmixins.IEarlyMixinLoader;
+import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import org.jetbrains.annotations.Nullable;
-import zone.rong.mixinbooter.IEarlyMixinLoader;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+@SuppressWarnings("unused")
+@IFMLLoadingPlugin.MCVersion("1.7.10")
 public class NEACore implements IFMLLoadingPlugin, IEarlyMixinLoader {
 
     @Override
@@ -36,7 +36,18 @@ public class NEACore implements IFMLLoadingPlugin, IEarlyMixinLoader {
     }
 
     @Override
-    public List<String> getMixinConfigs() {
-        return Collections.singletonList("mixin.neverenoughanimations.json");
+    public String getMixinConfig() {
+        return "mixins.neverenoughanimations.early.json";
+    }
+
+    @Override
+    public List<String> getMixins(Set<String> loadedCoreMods) {
+        final List<String> mixins = new ArrayList<>();
+        for (Mixins mixin : Mixins.values()) {
+            if (mixin.phase == Mixins.Phase.EARLY && mixin.shouldLoad(loadedCoreMods, Collections.emptySet())) {
+                mixins.add(mixin.mixinClass);
+            }
+        }
+        return mixins;
     }
 }

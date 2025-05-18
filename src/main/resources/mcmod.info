@@ -1,9 +1,9 @@
 [{
-    "modid": "${modid}",
-    "name": "${modname}",
+    "modid": "${modId}",
+    "name": "${modName}",
     "description": "An example mod for Minecraft 1.12.2 with Forge",
-    "version": "${version}",
-    "mcversion": "${mcversion}",
+    "version": "${modVersion}",
+    "mcversion": "${minecraftVersion}",
     "logoFile": "",
     "url": "",
     "authorList": [],

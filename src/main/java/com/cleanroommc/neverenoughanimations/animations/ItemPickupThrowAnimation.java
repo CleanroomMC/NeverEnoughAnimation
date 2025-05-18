@@ -3,12 +3,13 @@ package com.cleanroommc.neverenoughanimations.animations;
 import com.cleanroommc.neverenoughanimations.api.IItemLocation;
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
+import com.cleanroommc.neverenoughanimations.core.mixin.early.GuiContainerAccessor;
+import com.cleanroommc.neverenoughanimations.util.GlStateManager;
+import com.cleanroommc.neverenoughanimations.util.Platform;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.GuiOpenEvent;
@@ -26,15 +27,15 @@ public class ItemPickupThrowAnimation {
     @ApiStatus.Internal
     public static void onGuiOpen(GuiOpenEvent event) {
         if (NEAConfig.hoverAnimationTime > 0) {
-            if (!(event.getGui() instanceof GuiContainer)) {
+            if (!(event.gui instanceof GuiContainer)) {
                 if (lastGui != null) {
                     lastGui = null;
                     animated.clear();
                 }
                 return;
             }
-            if (!NEAConfig.isBlacklisted(event.getGui())) {
-                lastGui = (GuiContainer) event.getGui();
+            if (!NEAConfig.isBlacklisted(event.gui)) {
+                lastGui = (GuiContainer) event.gui;
                 animated.clear();
             }
         }
@@ -54,8 +55,8 @@ public class ItemPickupThrowAnimation {
     public static void animate(int x, int y, ItemStack stack, boolean absolutePos) {
         if (lastGui == null) return;
         if (absolutePos) {
-            x -= lastGui.getGuiLeft();
-            y -= lastGui.getGuiTop();
+            x -= ((GuiContainerAccessor) lastGui).getGuiLeft();
+            y -= ((GuiContainerAccessor) lastGui).getGuiTop();
         }
         animate(new IItemLocation.Impl(x, y, stack));
     }
@@ -101,14 +102,12 @@ public class ItemPickupThrowAnimation {
                 continue;
             }
             GlStateManager.translate(0, 0, 32f);
-            FontRenderer font = slot.nea$getStack().getItem().getFontRenderer(slot.nea$getStack());
-            if (font == null) font = fontRenderer;
-            itemRender.renderItemAndEffectIntoGUI(Minecraft.getMinecraft().player, slot.nea$getStack(), 0, 0);
-            itemRender.renderItemOverlayIntoGUI(font, slot.nea$getStack(), 0, 0, null);
+            Platform.drawItem(itemRender, slot.nea$getStack(), 0, 0, fontRenderer);
             if (value <= 1f) {
                 GlStateManager.popMatrix();
             }
             GlStateManager.translate(-x, -y, 0);
         }
+
     }
 }

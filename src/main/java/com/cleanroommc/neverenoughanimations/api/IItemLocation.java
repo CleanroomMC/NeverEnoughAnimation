@@ -1,6 +1,7 @@
 package com.cleanroommc.neverenoughanimations.api;
 
 import com.cleanroommc.neverenoughanimations.NEA;
+import com.cleanroommc.neverenoughanimations.core.mixin.early.GuiContainerAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
@@ -26,7 +27,7 @@ public interface IItemLocation {
         public int nea$getX() {
             int guiX = 0;
             if (Minecraft.getMinecraft().currentScreen instanceof GuiContainer container) {
-                guiX = container.getGuiLeft();
+                guiX = ((GuiContainerAccessor) container).getGuiLeft();
             }
             return NEA.getMouseX() - 8 - guiX;
         }
@@ -35,7 +36,7 @@ public interface IItemLocation {
         public int nea$getY() {
             int guiY = 0;
             if (Minecraft.getMinecraft().currentScreen instanceof GuiContainer container) {
-                guiY = container.getGuiTop();
+                guiY = ((GuiContainerAccessor) container).getGuiTop();
             }
             return NEA.getMouseY() - 8 - guiY;
         }
@@ -47,7 +48,7 @@ public interface IItemLocation {
 
         @Override
         public ItemStack nea$getStack() {
-            return Minecraft.getMinecraft().player.inventory.getItemStack();
+            return Minecraft.getMinecraft().thePlayer.inventory.getItemStack();
         }
     };
 

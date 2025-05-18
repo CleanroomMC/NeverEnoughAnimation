@@ -3,13 +3,11 @@ package com.cleanroommc.neverenoughanimations.animations;
 import com.cleanroommc.neverenoughanimations.api.IItemLocation;
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
+import com.cleanroommc.neverenoughanimations.util.Platform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.SlotItemHandler;
-import net.minecraftforge.items.wrapper.PlayerInvWrapper;
-import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 
 import java.util.List;
 
@@ -32,7 +30,7 @@ public class SwapHolder {
         }
         this.targetStack = this.targetSlot.getStack();
         this.hotbarStack = this.hotbarSlot.getStack();
-        if (this.targetStack.isEmpty() && this.hotbarStack.isEmpty()) {
+        if (Platform.isStackEmpty(this.targetStack) && Platform.isStackEmpty(this.hotbarStack)) {
             reset();
             return false;
         }
@@ -49,25 +47,25 @@ public class SwapHolder {
         IItemLocation hotbar = IItemLocation.of(this.hotbarSlot);
         IItemLocation hovering = IItemLocation.of(this.targetSlot);
         long time = NEA.time();
-        if (this.targetStack.isEmpty()) {
-            if (!hovering.nea$getStack().isEmpty()) {
+        if (Platform.isStackEmpty(this.targetStack)) {
+            if (!Platform.isStackEmpty(hovering.nea$getStack())) {
                 ItemMoveAnimation.queueAnimation(hotbar.nea$getSlotNumber(),
                                                  new ItemMovePacket(time, hotbar, hovering, hovering.nea$getStack().copy()));
-                ItemMoveAnimation.updateVirtualStack(hovering.nea$getSlotNumber(), ItemStack.EMPTY, 1);
+                ItemMoveAnimation.updateVirtualStack(hovering.nea$getSlotNumber(), Platform.EMPTY_STACK, 1);
             }
-        } else if (this.hotbarStack.isEmpty()) {
-            if (!hotbar.nea$getStack().isEmpty()) {
+        } else if (Platform.isStackEmpty(this.hotbarStack)) {
+            if (!Platform.isStackEmpty(hotbar.nea$getStack())) {
                 ItemMoveAnimation.queueAnimation(hovering.nea$getSlotNumber(),
                                                  new ItemMovePacket(time, hovering, hotbar, hotbar.nea$getStack().copy()));
-                ItemMoveAnimation.updateVirtualStack(hotbar.nea$getSlotNumber(), ItemStack.EMPTY, 1);
+                ItemMoveAnimation.updateVirtualStack(hotbar.nea$getSlotNumber(), Platform.EMPTY_STACK, 1);
             }
         } else {
             ItemMoveAnimation.queueAnimation(hotbar.nea$getSlotNumber(),
                                              new ItemMovePacket(time, hotbar, hovering, hovering.nea$getStack().copy()));
             ItemMoveAnimation.queueAnimation(hovering.nea$getSlotNumber(),
                                              new ItemMovePacket(time, hovering, hotbar, hotbar.nea$getStack().copy()));
-            ItemMoveAnimation.updateVirtualStack(hovering.nea$getSlotNumber(), ItemStack.EMPTY, 1);
-            ItemMoveAnimation.updateVirtualStack(hotbar.nea$getSlotNumber(), ItemStack.EMPTY, 1);
+            ItemMoveAnimation.updateVirtualStack(hovering.nea$getSlotNumber(), Platform.EMPTY_STACK, 1);
+            ItemMoveAnimation.updateVirtualStack(hotbar.nea$getSlotNumber(), Platform.EMPTY_STACK, 1);
         }
         reset();
     }
@@ -98,7 +96,7 @@ public class SwapHolder {
     public static Slot findHotbarSlot(List<Slot> slots, int index) {
         for (Slot slot : slots) {
             if (slot.getSlotIndex() != index) continue;
-            if (slot.inventory instanceof InventoryPlayer || (slot instanceof SlotItemHandler slotItemHandler && (slotItemHandler.getItemHandler() instanceof PlayerMainInvWrapper || slotItemHandler.getItemHandler() instanceof PlayerInvWrapper))) {
+            if (slot.inventory instanceof InventoryPlayer/* || (slot instanceof SlotItemHandler slotItemHandler && (slotItemHandler.getItemHandler() instanceof PlayerMainInvWrapper || slotItemHandler.getItemHandler() instanceof PlayerInvWrapper))*/) {
                 return slot;
             }
         }
