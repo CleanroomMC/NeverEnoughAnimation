@@ -118,7 +118,8 @@ public class NEA {
         openAnimationValue = 1f;
     }
 
-    /*@SubscribeEvent
+    /*
+    @SubscribeEvent
     public void drawDebugInfo(GuiScreenEvent.BackgroundDrawnEvent event) {
         if (event.getGui() instanceof GuiContainer container) {
             drawScreenDebug(container, event.getMouseX(), event.getMouseY());
