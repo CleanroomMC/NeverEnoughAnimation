@@ -37,26 +37,26 @@ public class HotbarAnimation {
         HotbarAnimation.currentX = -1;
     }
 
-    public static int getX(ScaledResolution sr) {
+    public static int getX(int scaledWidth) {
         int def = Minecraft.getMinecraft().thePlayer.inventory.currentItem;
-        if (NEAConfig.hotbarAnimationTime == 0 || oldIndex < 0 || newIndex < 0) return getX(sr, def);
+        if (NEAConfig.hotbarAnimationTime == 0 || oldIndex < 0 || newIndex < 0) return getX(scaledWidth, def);
         if (def != newIndex) {
             // index unexpectedly changed, abort animation
             reset();
-            return getX(sr, def);
+            return getX(scaledWidth, def);
         }
         float val = (NEA.time() - HotbarAnimation.startTime) / (float) NEAConfig.hotbarAnimationTime;
         if (val >= 1f) {
             // animation ended
             reset();
-            return getX(sr, def);
+            return getX(scaledWidth, def);
         }
-        if (fromX < 0) fromX = getX(sr, oldIndex);
-        currentX = (int) NEAConfig.hotbarAnimationCurve.interpolate(fromX, getX(sr, newIndex), val);
+        if (fromX < 0) fromX = getX(scaledWidth, oldIndex);
+        currentX = (int) NEAConfig.hotbarAnimationCurve.interpolate(fromX, getX(scaledWidth, newIndex), val);
         return currentX;
     }
 
-    public static int getX(ScaledResolution sr, int index) {
-        return sr.getScaledWidth() / 2 - 91 - 1 + index * 20; // vanilla behaviour
+    public static int getX(int scaledWidth, int index) {
+        return scaledWidth/ 2 - 91 - 1 + index * 20; // vanilla behaviour
     }
 }
