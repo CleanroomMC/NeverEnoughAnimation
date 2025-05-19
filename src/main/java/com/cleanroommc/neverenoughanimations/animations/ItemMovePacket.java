@@ -3,6 +3,7 @@ package com.cleanroommc.neverenoughanimations.animations;
 import com.cleanroommc.neverenoughanimations.api.IItemLocation;
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
+import com.cleanroommc.neverenoughanimations.util.Platform;
 import net.minecraft.item.ItemStack;
 
 public class ItemMovePacket {
@@ -16,7 +17,7 @@ public class ItemMovePacket {
         this.time = time;
         this.source = source;
         this.target = target;
-        this.targetStack = target.nea$getStack().copy();
+        this.targetStack = Platform.copyStack(target.nea$getStack());
         this.movingStack = movingStack;
     }
 

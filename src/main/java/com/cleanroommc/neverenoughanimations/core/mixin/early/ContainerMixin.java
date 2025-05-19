@@ -79,6 +79,7 @@ public abstract class ContainerMixin {
         } else if (clickTypeIn == ClickType.SWAP && dragType >= 0 && dragType < 9) {
             // fuck creative inventory
             // TODO if ((Object) this instanceof GuiContainerCreative.ContainerCreative || NEAConfig.moveAnimationTime == 0) return;
+            if (NEAConfig.moveAnimationTime == 0) return;
             Slot targetSlot = this.inventorySlots.get(slotId);
             if (SwapHolder.INSTANCE.init(targetSlot, this.inventorySlots, dragType)) {
                 swapHolder.set(SwapHolder.INSTANCE);
@@ -105,7 +106,6 @@ public abstract class ContainerMixin {
     }
 
     @WrapOperation(method = "slotClick", at = @At(value = "FIELD", target = "Lnet/minecraft/item/ItemStack;stackSize:I", ordinal = 41))
-    //@Redirect(method = "slotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;grow(I)V", ordinal = 2))
     public void pickupAllMid(ItemStack instance, int quantity, Operation<Void> original,
                              @Share("packets") LocalRef<Int2ObjectArrayMap<ItemMovePacket>> packets, @Local(ordinal = 1) Slot slot) {
         if (NEAConfig.moveAnimationTime > 0) {
@@ -113,12 +113,11 @@ public abstract class ContainerMixin {
             if (packets.get() == null) packets.set(new Int2ObjectArrayMap<>());
             IItemLocation source = IItemLocation.of(slot);
             ItemStack movingStack = instance.copy();
-            Platform.setCount(movingStack, quantity - instance.stackSize);
+            Platform.setCount(movingStack, quantity - instance.stackSize); // contrary to 1.12 this doesnt grow stack size by quantity, but sets stack size by quantity, so we need to adjust it here
             packets.get().put(source.nea$getSlotNumber(), new ItemMovePacket(NEA.time(), source, IItemLocation.CURSOR, movingStack));
         }
         // do the redirected action
         original.call(instance, quantity);
-        //Platform.grow(instance, quantity);
     }
 
     @Inject(method = "slotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/inventory/Container;detectAndSendChanges()V"))

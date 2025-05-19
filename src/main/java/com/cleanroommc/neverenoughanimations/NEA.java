@@ -80,6 +80,8 @@ public class NEA {
         OpeningAnimation.checkGuiToClose();
     }
 
+
+    // doesn't work for some reason
     /*@SubscribeEvent
     public void onGuiTick(TickEvent event) {
         //OpeningAnimation.checkGuiToClose();

@@ -17,14 +17,14 @@ public class SwapHolder {
 
     private Slot targetSlot;
     private Slot hotbarSlot;
-    private ItemStack targetStack;
-    private ItemStack hotbarStack;
+    private ItemStack targetStack = ItemMoveAnimation.NULL_MARKER;
+    private ItemStack hotbarStack = ItemMoveAnimation.NULL_MARKER;
 
     public boolean init(Slot hoveredSlot, List<Slot> slots, int hotbarIndex) {
         if (NEAConfig.isBlacklisted(Minecraft.getMinecraft().currentScreen)) return false;
         this.targetSlot = hoveredSlot;
         this.hotbarSlot = findHotbarSlot(slots, hotbarIndex);
-        if (this.hotbarSlot == null) {
+        if (this.hotbarSlot == null || this.hotbarSlot == this.targetSlot) {
             reset();
             return false;
         }
@@ -34,13 +34,13 @@ public class SwapHolder {
             reset();
             return false;
         }
-        this.targetStack = this.targetStack.copy();
-        this.hotbarStack = this.hotbarStack.copy();
+        this.targetStack = Platform.copyStack(this.targetStack);
+        this.hotbarStack = Platform.copyStack(this.hotbarStack);
         return true;
     }
 
     public void performSwap() {
-        if (this.hotbarSlot == null || this.targetSlot == null || this.hotbarStack == null || this.targetStack == null) {
+        if (this.hotbarSlot == null || this.targetSlot == null || this.hotbarStack == ItemMoveAnimation.NULL_MARKER || this.targetStack == ItemMoveAnimation.NULL_MARKER) {
             reset();
             return;
         }
@@ -50,21 +50,28 @@ public class SwapHolder {
         if (Platform.isStackEmpty(this.targetStack)) {
             if (!Platform.isStackEmpty(hovering.nea$getStack())) {
                 ItemMoveAnimation.queueAnimation(hotbar.nea$getSlotNumber(),
-                                                 new ItemMovePacket(time, hotbar, hovering, hovering.nea$getStack().copy()));
+                                                 new ItemMovePacket(time, hotbar, hovering, Platform.copyStack(hovering.nea$getStack())));
                 ItemMoveAnimation.updateVirtualStack(hovering.nea$getSlotNumber(), Platform.EMPTY_STACK, 1);
             }
         } else if (Platform.isStackEmpty(this.hotbarStack)) {
             if (!Platform.isStackEmpty(hotbar.nea$getStack())) {
                 ItemMoveAnimation.queueAnimation(hovering.nea$getSlotNumber(),
-                                                 new ItemMovePacket(time, hovering, hotbar, hotbar.nea$getStack().copy()));
+                        new ItemMovePacket(time, hovering, hotbar, Platform.copyStack(hotbar.nea$getStack().copy())));
                 ItemMoveAnimation.updateVirtualStack(hotbar.nea$getSlotNumber(), Platform.EMPTY_STACK, 1);
             }
-        } else {
+        } else if (this.targetSlot.inventory instanceof InventoryPlayer) {
+            // only swap items if we are in player inventory
             ItemMoveAnimation.queueAnimation(hotbar.nea$getSlotNumber(),
-                                             new ItemMovePacket(time, hotbar, hovering, hovering.nea$getStack().copy()));
+                                             new ItemMovePacket(time, hotbar, hovering, Platform.copyStack(hovering.nea$getStack())));
             ItemMoveAnimation.queueAnimation(hovering.nea$getSlotNumber(),
-                                             new ItemMovePacket(time, hovering, hotbar, hotbar.nea$getStack().copy()));
+                                             new ItemMovePacket(time, hovering, hotbar, Platform.copyStack(hotbar.nea$getStack())));
             ItemMoveAnimation.updateVirtualStack(hovering.nea$getSlotNumber(), Platform.EMPTY_STACK, 1);
+            ItemMoveAnimation.updateVirtualStack(hotbar.nea$getSlotNumber(), Platform.EMPTY_STACK, 1);
+        } else {
+            // otherwise move to hotbar
+            // TODO animate reinsertion of previous hotbar slot item
+            ItemMoveAnimation.queueAnimation(hovering.nea$getSlotNumber(),
+                    new ItemMovePacket(time, hovering, hotbar, Platform.copyStack(hotbar.nea$getStack().copy())));
             ItemMoveAnimation.updateVirtualStack(hotbar.nea$getSlotNumber(), Platform.EMPTY_STACK, 1);
         }
         reset();
@@ -73,8 +80,8 @@ public class SwapHolder {
     public void reset() {
         this.targetSlot = null;
         this.hotbarSlot = null;
-        this.targetStack = null;
-        this.hotbarStack = null;
+        this.targetStack = ItemMoveAnimation.NULL_MARKER;
+        this.hotbarStack = ItemMoveAnimation.NULL_MARKER;
     }
 
     public ItemStack getTargetStack() {
