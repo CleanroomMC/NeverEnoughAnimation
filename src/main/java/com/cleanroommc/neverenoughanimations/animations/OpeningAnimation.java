@@ -36,6 +36,8 @@ public class OpeningAnimation {
         return false;
     }
 
+    public static boolean currentlyScaling = false;
+
     private static IAnimatedScreen lastGui;
     private static IAnimatedScreen animatedGui;
     //private static boolean oldAllowAllInteractions = false;

@@ -22,7 +22,8 @@ public enum Mixins {
     SlotMixin("SlotMixin", Phase.EARLY, Side.CLIENT, VANILLA),
     TessellatorMixin("TessellatorMixin", Phase.EARLY, Side.CLIENT, VANILLA),
 
-    GuiContainerManagerMixin("nei.GuiContainerManagerMixin", Phase.LATE, Side.CLIENT, NEI);
+    GuiContainerManagerMixin("nei.GuiContainerManagerMixin", Phase.LATE, Side.CLIENT, NEI),
+    LayoutManagerMixin("nei.LayoutManagerMixin", Phase.LATE, Side.CLIENT, NEI);
 
     public final String mixinClass;
     public final Phase phase;

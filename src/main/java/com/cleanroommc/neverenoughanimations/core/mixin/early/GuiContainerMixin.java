@@ -33,6 +33,8 @@ public abstract class GuiContainerMixin extends GuiScreen implements IAnimatedSc
 
     @Shadow protected int xSize;
 
+    @Shadow protected int ySize;
+
     @Inject(method = "func_146977_a",
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/entity/RenderItem;zLevel:F", ordinal = 0))
     public void injectVirtualStack(Slot slotIn, CallbackInfo ci, @Local(ordinal = 0) LocalRef<ItemStack> itemStack) {
@@ -107,8 +109,7 @@ public abstract class GuiContainerMixin extends GuiScreen implements IAnimatedSc
         }
     }
 
-    @Inject(method = "drawScreen",
-            at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glPopMatrix()V", remap = false))
+    @Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glPopMatrix()V", remap = false))
     public void drawMovingItems(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         zLevel = 200;
         itemRender.zLevel = 200;
@@ -148,6 +149,6 @@ public abstract class GuiContainerMixin extends GuiScreen implements IAnimatedSc
 
     @Override
     public int nea$getHeight() {
-        return height;
+        return ySize;
     }
 }

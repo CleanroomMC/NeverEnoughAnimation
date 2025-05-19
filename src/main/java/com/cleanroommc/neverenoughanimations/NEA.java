@@ -107,14 +107,16 @@ public class NEA {
         openAnimationValue = OpeningAnimation.getValue(currentDrawnScreen);
         if (NEAConfig.moveAnimationTime > 0 && event.gui instanceof IAnimatedScreen) {
             GlStateManager.pushMatrix();
+            OpeningAnimation.currentlyScaling = true;
         }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onGuiDrawPost(GuiScreenEvent.DrawScreenEvent.Post event) {
-        if (NEAConfig.moveAnimationTime > 0 && event.gui instanceof IAnimatedScreen screen) {
+        if (OpeningAnimation.currentlyScaling && event.gui instanceof IAnimatedScreen screen) {
             GlStateManager.popMatrix();
             OpeningAnimation.getScale(screen); // make sure screens don't get stuck in case they don't render the scale
+            OpeningAnimation.currentlyScaling = false;
         }
         currentDrawnScreen = null;
         openAnimationValue = 1f;
