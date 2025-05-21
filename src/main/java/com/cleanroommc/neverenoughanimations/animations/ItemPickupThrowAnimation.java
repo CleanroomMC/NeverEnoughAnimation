@@ -1,22 +1,25 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
-import com.cleanroommc.neverenoughanimations.api.IItemLocation;
-import com.cleanroommc.neverenoughanimations.NEA;
-import com.cleanroommc.neverenoughanimations.NEAConfig;
-import com.cleanroommc.neverenoughanimations.core.mixin.early.GuiContainerAccessor;
-import com.cleanroommc.neverenoughanimations.util.GlStateManager;
-import com.cleanroommc.neverenoughanimations.util.Platform;
-import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.GuiOpenEvent;
+
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.cleanroommc.neverenoughanimations.NEA;
+import com.cleanroommc.neverenoughanimations.NEAConfig;
+import com.cleanroommc.neverenoughanimations.api.IItemLocation;
+import com.cleanroommc.neverenoughanimations.core.mixin.early.GuiContainerAccessor;
+import com.cleanroommc.neverenoughanimations.util.GlStateManager;
+import com.cleanroommc.neverenoughanimations.util.Platform;
+
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 
 public class ItemPickupThrowAnimation {
 
@@ -76,7 +79,8 @@ public class ItemPickupThrowAnimation {
         return NEAConfig.appearAnimationCurve.interpolate(0f, 1f, val);
     }
 
-    public static void drawIndependentAnimations(GuiContainer container, RenderItem itemRender, FontRenderer fontRenderer) {
+    public static void drawIndependentAnimations(GuiContainer container, RenderItem itemRender,
+        FontRenderer fontRenderer) {
         for (int i = 0, n = removalAnimation.size(); i < n; i++) {
             IItemLocation slot = removalAnimation.get(i);
             int x = slot.nea$getX();

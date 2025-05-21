@@ -1,13 +1,13 @@
 package com.cleanroommc.neverenoughanimations.core;
 
-import cpw.mods.fml.relauncher.FMLLaunchHandler;
+import static com.cleanroommc.neverenoughanimations.core.TargetedMod.NEI;
+import static com.cleanroommc.neverenoughanimations.core.TargetedMod.VANILLA;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static com.cleanroommc.neverenoughanimations.core.TargetedMod.NEI;
-import static com.cleanroommc.neverenoughanimations.core.TargetedMod.VANILLA;
+import cpw.mods.fml.relauncher.FMLLaunchHandler;
 
 public enum Mixins {
 
@@ -63,8 +63,10 @@ public enum Mixins {
     }
 
     private boolean shouldLoadSide() {
-        return (side == Side.BOTH || (side == Side.SERVER && FMLLaunchHandler.side().isServer())
-            || (side == Side.CLIENT && FMLLaunchHandler.side().isClient()));
+        return (side == Side.BOTH || (side == Side.SERVER && FMLLaunchHandler.side()
+            .isServer())
+            || (side == Side.CLIENT && FMLLaunchHandler.side()
+                .isClient()));
     }
 
     private boolean allModsLoaded(List<TargetedMod> targetedMods, Set<String> loadedCoreMods, Set<String> loadedMods) {

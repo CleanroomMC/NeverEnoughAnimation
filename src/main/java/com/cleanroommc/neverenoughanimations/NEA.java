@@ -1,31 +1,7 @@
 package com.cleanroommc.neverenoughanimations;
 
-import com.cleanroommc.neverenoughanimations.animations.ItemHoverAnimation;
-import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
-import com.cleanroommc.neverenoughanimations.animations.ItemPickupThrowAnimation;
-import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
-import com.cleanroommc.neverenoughanimations.api.IAnimatedScreen;
-import com.cleanroommc.neverenoughanimations.api.IItemLocation;
-import com.cleanroommc.neverenoughanimations.util.GlStateManager;
-import com.gtnewhorizon.gtnhlib.config.ConfigException;
-import com.gtnewhorizon.gtnhlib.config.ConfigurationManager;
-import cpw.mods.fml.client.event.ConfigChangedEvent;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.ModContainer;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.util.Timer;
 import net.minecraftforge.client.event.GuiOpenEvent;
@@ -35,18 +11,30 @@ import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.input.Mouse;
 
-import java.awt.*;
+import com.cleanroommc.neverenoughanimations.animations.ItemHoverAnimation;
+import com.cleanroommc.neverenoughanimations.animations.ItemMoveAnimation;
+import com.cleanroommc.neverenoughanimations.animations.ItemPickupThrowAnimation;
+import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
+import com.cleanroommc.neverenoughanimations.api.IAnimatedScreen;
+import com.cleanroommc.neverenoughanimations.util.GlStateManager;
+import com.gtnewhorizon.gtnhlib.config.ConfigException;
+import com.gtnewhorizon.gtnhlib.config.ConfigurationManager;
 
-import static codechicken.lib.gui.GuiDraw.renderEngine;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.ModContainer;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
-@Mod(modid = Tags.MODID,
-     version = Tags.VERSION,
-     name = Tags.MODNAME,
-     acceptedMinecraftVersions = "[1.7.10,)",
-     dependencies = "required-after:gtnhmixins@[2.0.1,);",
-     guiFactory = "com.cleanroommc.neverenoughanimations.NEAGuiConfigFactory")
+@Mod(
+    modid = Tags.MODID,
+    version = Tags.VERSION,
+    name = Tags.MODNAME,
+    acceptedMinecraftVersions = "[1.7.10,)",
+    dependencies = "required-after:gtnhmixins@[2.0.1,);",
+    guiFactory = "com.cleanroommc.neverenoughanimations.NEAGuiConfigFactory")
 public class NEA {
 
     public static final Logger LOGGER = LogManager.getLogger(Tags.MODID);
@@ -66,7 +54,9 @@ public class NEA {
         itemBordersLoaded = Loader.isModLoaded("itemborders");
         jeiLoaded = Loader.isModLoaded("jei");
         if (jeiLoaded) {
-            ModContainer mod = Loader.instance().getIndexedModList().get("jei");
+            ModContainer mod = Loader.instance()
+                .getIndexedModList()
+                .get("jei");
             heiLoaded = "Had Enough Items".equals(mod.getName());
         }
         try {
@@ -80,14 +70,14 @@ public class NEA {
         OpeningAnimation.checkGuiToClose();
     }
 
-
     // doesn't work for some reason
-    /*@SubscribeEvent
-    public void onGuiTick(TickEvent event) {
-        //OpeningAnimation.checkGuiToClose();
-        if (event.phase == TickEvent.Phase.END) return;
-
-    }*/
+    /*
+     * @SubscribeEvent
+     * public void onGuiTick(TickEvent event) {
+     * //OpeningAnimation.checkGuiToClose();
+     * if (event.phase == TickEvent.Phase.END) return;
+     * }
+     */
 
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
@@ -123,33 +113,31 @@ public class NEA {
     }
 
     /*
-    @SubscribeEvent
-    public void drawDebugInfo(GuiScreenEvent.BackgroundDrawnEvent event) {
-        if (event.getGui() instanceof GuiContainer container) {
-            drawScreenDebug(container, event.getMouseX(), event.getMouseY());
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onGuiBackgroundDrawn(GuiScreenEvent.BackgroundDrawnEvent event) {
-        if (NEAConfig.moveAnimationTime > 0) {
-            OpeningAnimation.handleScale(event.getGui(), true);
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void mouseInput(GuiScreenEvent.MouseInputEvent.Pre event) {
-        if (OpeningAnimation.isAnimatingClose(event.getGui())) {
-            event.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void mouseInput(GuiScreenEvent.KeyboardInputEvent.Pre event) {
-        if (OpeningAnimation.isAnimatingClose(event.getGui())) {
-            event.setCanceled(true);
-        }
-    }*/
+     * @SubscribeEvent
+     * public void drawDebugInfo(GuiScreenEvent.BackgroundDrawnEvent event) {
+     * if (event.getGui() instanceof GuiContainer container) {
+     * drawScreenDebug(container, event.getMouseX(), event.getMouseY());
+     * }
+     * }
+     * @SubscribeEvent(priority = EventPriority.LOWEST)
+     * public void onGuiBackgroundDrawn(GuiScreenEvent.BackgroundDrawnEvent event) {
+     * if (NEAConfig.moveAnimationTime > 0) {
+     * OpeningAnimation.handleScale(event.getGui(), true);
+     * }
+     * }
+     * @SubscribeEvent(priority = EventPriority.HIGHEST)
+     * public void mouseInput(GuiScreenEvent.MouseInputEvent.Pre event) {
+     * if (OpeningAnimation.isAnimatingClose(event.getGui())) {
+     * event.setCanceled(true);
+     * }
+     * }
+     * @SubscribeEvent(priority = EventPriority.HIGHEST)
+     * public void mouseInput(GuiScreenEvent.KeyboardInputEvent.Pre event) {
+     * if (OpeningAnimation.isAnimatingClose(event.getGui())) {
+     * event.setCanceled(true);
+     * }
+     * }
+     */
 
     public static int getMouseX() {
         return mouseX;
@@ -174,37 +162,38 @@ public class NEA {
     }
 
     public static void drawScreenDebug(GuiContainer container, int mouseX, int mouseY) {
-        /*if (!isDevEnv || container.getClass().getName().contains("modularui")) return;
-        GlStateManager.disableDepth();
-        GlStateManager.disableLighting();
-        GlStateManager.enableBlend();
-
-        int screenH = container.height;
-        int color = new java.awt.Color(180, 40, 115).getRGB();
-        int lineY = screenH - 13;
-        FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
-        container.drawString(fr, "Mouse Pos: " + mouseX + ", " + mouseY, 5, lineY, color);
-        lineY -= 11;
-        container.drawString(fr, "Rel. Mouse Pos: " + (mouseX - container.getGuiLeft()) + ", " + (mouseY - container.getGuiTop()), 5, lineY,
-                             color);
-        IItemLocation slot = IItemLocation.of(container.getSlotUnderMouse());
-        if (slot != null) {
-            lineY -= 11;
-            container.drawString(fr, "Pos: " + slot.nea$getX() + ", " + slot.nea$getY(), 5, lineY, color);
-            lineY -= 11;
-            container.drawString(fr, "Class: " + slot.getClass().getSimpleName(), 5, lineY, color);
-            lineY -= 11;
-            container.drawString(fr, "Slot Number: " + slot.nea$getSlotNumber(), 5, lineY, color);
-            lineY -= 11;
-        }
-        // dot at mouse pos
-        Gui.drawRect(mouseX, mouseY, mouseX + 1, mouseY + 1, new Color(10, 230, 10, (int) (0.8 * 155)).getRGB());
-
-        GlStateManager.color(1f, 1f, 1f, 1f);
-        GlStateManager.enableLighting();
-        GlStateManager.enableDepth();
-        GlStateManager.enableRescaleNormal();
-        RenderHelper.enableStandardItemLighting();*/
+        /*
+         * if (!isDevEnv || container.getClass().getName().contains("modularui")) return;
+         * GlStateManager.disableDepth();
+         * GlStateManager.disableLighting();
+         * GlStateManager.enableBlend();
+         * int screenH = container.height;
+         * int color = new java.awt.Color(180, 40, 115).getRGB();
+         * int lineY = screenH - 13;
+         * FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+         * container.drawString(fr, "Mouse Pos: " + mouseX + ", " + mouseY, 5, lineY, color);
+         * lineY -= 11;
+         * container.drawString(fr, "Rel. Mouse Pos: " + (mouseX - container.getGuiLeft()) + ", " + (mouseY -
+         * container.getGuiTop()), 5, lineY,
+         * color);
+         * IItemLocation slot = IItemLocation.of(container.getSlotUnderMouse());
+         * if (slot != null) {
+         * lineY -= 11;
+         * container.drawString(fr, "Pos: " + slot.nea$getX() + ", " + slot.nea$getY(), 5, lineY, color);
+         * lineY -= 11;
+         * container.drawString(fr, "Class: " + slot.getClass().getSimpleName(), 5, lineY, color);
+         * lineY -= 11;
+         * container.drawString(fr, "Slot Number: " + slot.nea$getSlotNumber(), 5, lineY, color);
+         * lineY -= 11;
+         * }
+         * // dot at mouse pos
+         * Gui.drawRect(mouseX, mouseY, mouseX + 1, mouseY + 1, new Color(10, 230, 10, (int) (0.8 * 155)).getRGB());
+         * GlStateManager.color(1f, 1f, 1f, 1f);
+         * GlStateManager.enableLighting();
+         * GlStateManager.enableDepth();
+         * GlStateManager.enableRescaleNormal();
+         * RenderHelper.enableStandardItemLighting();
+         */
     }
 
     public static boolean isItemBordersLoaded() {

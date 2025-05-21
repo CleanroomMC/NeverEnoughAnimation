@@ -1,16 +1,9 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
-import com.cleanroommc.neverenoughanimations.NEA;
-import com.cleanroommc.neverenoughanimations.NEAConfig;
-import com.cleanroommc.neverenoughanimations.api.IItemLocation;
-import com.cleanroommc.neverenoughanimations.util.GlStateManager;
-import com.cleanroommc.neverenoughanimations.util.Platform;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -19,12 +12,22 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.GuiOpenEvent;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import com.cleanroommc.neverenoughanimations.NEA;
+import com.cleanroommc.neverenoughanimations.NEAConfig;
+import com.cleanroommc.neverenoughanimations.api.IItemLocation;
+import com.cleanroommc.neverenoughanimations.util.GlStateManager;
+import com.cleanroommc.neverenoughanimations.util.Platform;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @SideOnly(Side.CLIENT)
 public class ItemMoveAnimation {
@@ -64,10 +67,11 @@ public class ItemMoveAnimation {
     }
 
     public static ItemStack getVirtualStack(GuiContainer container, IItemLocation slot) {
-        return container == lastGui &&
-                       !NEAConfig.isBlacklisted(container) &&
-                       virtualStacks.size() > slot.nea$getSlotNumber() + 1 &&
-                       virtualStacksUser.getInt(slot.nea$getSlotNumber() + 1) > 0 ? virtualStacks.get(slot.nea$getSlotNumber() + 1) : NULL_MARKER;
+        return container == lastGui && !NEAConfig.isBlacklisted(container)
+            && virtualStacks.size() > slot.nea$getSlotNumber() + 1
+            && virtualStacksUser.getInt(slot.nea$getSlotNumber() + 1) > 0
+                ? virtualStacks.get(slot.nea$getSlotNumber() + 1)
+                : NULL_MARKER;
     }
 
     @ApiStatus.Internal
@@ -111,14 +115,14 @@ public class ItemMoveAnimation {
      */
     @ApiStatus.Internal
     public static Pair<List<Slot>, List<ItemStack>> getCandidates(Slot in, List<Slot> allSlots) {
-        if (NEAConfig.moveAnimationTime == 0 ||
-                NEAConfig.isBlacklisted(Minecraft.getMinecraft().currentScreen) ||
-                NEA.time() - lastAnimation <= 10) {
+        if (NEAConfig.moveAnimationTime == 0 || NEAConfig.isBlacklisted(Minecraft.getMinecraft().currentScreen)
+            || NEA.time() - lastAnimation <= 10) {
             return null;
         }
         List<Slot> slots = new ArrayList<>(allSlots.size());
         List<ItemStack> stacks = new ArrayList<>(allSlots.size());
-        ItemStack item = IItemLocation.of(in).nea$getStack();
+        ItemStack item = IItemLocation.of(in)
+            .nea$getStack();
         for (Slot slot : allSlots) {
             if (in == slot) continue;
             ItemStack other = slot.getStack();
@@ -174,23 +178,30 @@ public class ItemMoveAnimation {
                     stagedVirtualStacks.put(slot.nea$getSlotNumber(), oldStack);
                 } else if (Platform.getCount(oldStack) > Platform.getCount(newStack)) {
                     // what
-                    NEA.LOGGER.error("After shift clicking a target slot ({}) now has less items than before!", slot.nea$getSlotNumber());
+                    NEA.LOGGER.error(
+                        "After shift clicking a target slot ({}) now has less items than before!",
+                        slot.nea$getSlotNumber());
                     error = true;
                 }
             } else {
                 // what
-                NEA.LOGGER.error("After shift clicking a target slot ({}) now has a different item than before!", slot.nea$getSlotNumber());
+                NEA.LOGGER.error(
+                    "After shift clicking a target slot ({}) now has a different item than before!",
+                    slot.nea$getSlotNumber());
                 error = true;
             }
             if (total <= 0) break;
         }
         if (total < 0) {
-            NEA.LOGGER.error("The original stack had {} items, but {} items where moved!", Platform.getCount(oldSource),
-                             Platform.getCount(oldSource) - total);
+            NEA.LOGGER.error(
+                "The original stack had {} items, but {} items where moved!",
+                Platform.getCount(oldSource),
+                Platform.getCount(oldSource) - total);
         }
         if (error || packets.isEmpty()) return;
         queueAnimation(sourceLoc.nea$getSlotNumber(), packets);
-        for (var iterator = stagedVirtualStacks.int2ObjectEntrySet().fastIterator(); iterator.hasNext(); ) {
+        for (var iterator = stagedVirtualStacks.int2ObjectEntrySet()
+            .fastIterator(); iterator.hasNext();) {
             var e = iterator.next();
             updateVirtualStack(e.getIntKey(), e.getValue(), 1);
         }
@@ -208,9 +219,10 @@ public class ItemMoveAnimation {
      * Render all animated item stacks.
      */
     public static void drawAnimations(RenderItem itemRender, FontRenderer fontRenderer) {
-        for (var iter = movingItemsBySource.values().iterator(); iter.hasNext(); ) {
+        for (var iter = movingItemsBySource.values()
+            .iterator(); iter.hasNext();) {
             List<ItemMovePacket> packets = iter.next();
-            for (Iterator<ItemMovePacket> iterator = packets.iterator(); iterator.hasNext(); ) {
+            for (Iterator<ItemMovePacket> iterator = packets.iterator(); iterator.hasNext();) {
                 ItemMovePacket packet = iterator.next();
                 boolean end = false;
                 float val = packet.value();
@@ -223,7 +235,11 @@ public class ItemMoveAnimation {
                 GlStateManager.translate(0, 0, 32f);
                 Platform.drawItem(itemRender, packet.getMovingStack(), x, y, fontRenderer);
                 if (end) {
-                    ItemMoveAnimation.updateVirtualStack(packet.getTarget().nea$getSlotNumber(), packet.getTargetStack(), -1);
+                    ItemMoveAnimation.updateVirtualStack(
+                        packet.getTarget()
+                            .nea$getSlotNumber(),
+                        packet.getTargetStack(),
+                        -1);
                     if (packets.size() == 1) {
                         iter.remove();
                         break;

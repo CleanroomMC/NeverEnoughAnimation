@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 @FunctionalInterface
 public interface IStringSerializable {
 
-    @NotNull String getName();
+    @NotNull
+    String getName();
 
 }

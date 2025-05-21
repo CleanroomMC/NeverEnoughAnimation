@@ -2,6 +2,7 @@ package com.cleanroommc.neverenoughanimations;
 
 import com.cleanroommc.neverenoughanimations.util.Interpolation;
 import com.gtnewhorizon.gtnhlib.config.Config;
+
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 
 @Config(modid = Tags.MODID)
@@ -52,9 +53,9 @@ public class NEAConfig {
     public static float openingStartScale = 0.9f;
 
     @Config.Name("Gui class animation blacklist")
-    @Config.Comment({"Add class names (works with * at the end) which should be blacklisted from any animations.",
-            "This is used to prevent visual issues with certain mods."})
-    public static String[] guiAnimationBlacklist = {"gregtech.*", "com.cleanroommc.modularui.*"};
+    @Config.Comment({ "Add class names (works with * at the end) which should be blacklisted from any animations.",
+        "This is used to prevent visual issues with certain mods." })
+    public static String[] guiAnimationBlacklist = { "gregtech.*", "com.cleanroommc.modularui.*" };
 
     @Config.Ignore
     public static Object2BooleanOpenHashMap<Class<?>> blacklistCache = new Object2BooleanOpenHashMap<>();
@@ -63,7 +64,8 @@ public class NEAConfig {
         if (screen == null) return true;
         if (guiAnimationBlacklist.length == 0) return false;
         if (blacklistCache.containsKey(screen.getClass())) return blacklistCache.getBoolean(screen.getClass());
-        String name = screen.getClass().getName();
+        String name = screen.getClass()
+            .getName();
         for (String gui : guiAnimationBlacklist) {
             if (gui.endsWith("*")) {
                 if (name.startsWith(gui.substring(gui.length() - 1))) {

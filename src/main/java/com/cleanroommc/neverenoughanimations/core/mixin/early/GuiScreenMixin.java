@@ -1,22 +1,26 @@
 package com.cleanroommc.neverenoughanimations.core.mixin.early;
 
-import com.cleanroommc.neverenoughanimations.NEA;
-import com.cleanroommc.neverenoughanimations.NEAConfig;
-import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.cleanroommc.neverenoughanimations.NEA;
+import com.cleanroommc.neverenoughanimations.NEAConfig;
+import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
+
 @Mixin(GuiScreen.class)
 public class GuiScreenMixin extends Gui {
 
-    @Redirect(method = "drawWorldBackground",
-              at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;drawGradientRect(IIIIII)V"))
-    public void fadeBackground(GuiScreen instance, int left, int top, int width, int height, int startColor, int endColor) {
+    @Redirect(
+        method = "drawWorldBackground",
+        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;drawGradientRect(IIIIII)V"))
+    public void fadeBackground(GuiScreen instance, int left, int top, int width, int height, int startColor,
+        int endColor) {
         float alpha = OpeningAnimation.getValue(instance);
         if (alpha < 1f) {
             startColor = NEA.withAlpha(startColor, (int) (NEA.getAlpha(startColor) * alpha));

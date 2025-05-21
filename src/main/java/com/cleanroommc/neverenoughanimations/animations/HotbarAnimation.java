@@ -1,9 +1,9 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
+import net.minecraft.client.Minecraft;
+
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
 
 public class HotbarAnimation {
 
@@ -57,6 +57,6 @@ public class HotbarAnimation {
     }
 
     public static int getX(int scaledWidth, int index) {
-        return scaledWidth/ 2 - 91 - 1 + index * 20; // vanilla behaviour
+        return scaledWidth / 2 - 91 - 1 + index * 20; // vanilla behaviour
     }
 }

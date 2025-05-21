@@ -1,15 +1,18 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
-import com.cleanroommc.neverenoughanimations.NEA;
-import com.cleanroommc.neverenoughanimations.NEAConfig;
-import com.cleanroommc.neverenoughanimations.core.mixin.early.GuiContainerAccessor;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraftforge.client.event.GuiOpenEvent;
+
 import org.jetbrains.annotations.ApiStatus;
+
+import com.cleanroommc.neverenoughanimations.NEA;
+import com.cleanroommc.neverenoughanimations.NEAConfig;
+import com.cleanroommc.neverenoughanimations.core.mixin.early.GuiContainerAccessor;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 
 @SideOnly(Side.CLIENT)
 public class ItemHoverAnimation {

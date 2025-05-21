@@ -1,10 +1,11 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
-import com.cleanroommc.neverenoughanimations.api.IItemLocation;
+import net.minecraft.item.ItemStack;
+
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
+import com.cleanroommc.neverenoughanimations.api.IItemLocation;
 import com.cleanroommc.neverenoughanimations.util.Platform;
-import net.minecraft.item.ItemStack;
 
 public class ItemMovePacket {
 

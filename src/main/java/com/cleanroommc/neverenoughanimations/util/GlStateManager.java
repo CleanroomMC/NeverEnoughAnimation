@@ -1,6 +1,7 @@
 package com.cleanroommc.neverenoughanimations.util;
 
 import net.minecraft.client.renderer.OpenGlHelper;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -49,7 +50,8 @@ public class GlStateManager {
         GL11.glBlendFunc(srcFactor, dstFactor);
     }
 
-    public static void tryBlendFuncSeparate(SourceFactor srcFactor, DestFactor dstFactor, SourceFactor srcFactorAlpha, DestFactor dstFactorAlpha) {
+    public static void tryBlendFuncSeparate(SourceFactor srcFactor, DestFactor dstFactor, SourceFactor srcFactorAlpha,
+        DestFactor dstFactorAlpha) {
         tryBlendFuncSeparate(srcFactor.factor, dstFactor.factor, srcFactorAlpha.factor, dstFactorAlpha.factor);
     }
 
@@ -142,6 +144,7 @@ public class GlStateManager {
     }
 
     public enum DestFactor {
+
         ONE_MINUS_SRC_ALPHA(771),
         ZERO(0);
 
@@ -153,6 +156,7 @@ public class GlStateManager {
     }
 
     public enum SourceFactor {
+
         ONE(1),
         SRC_ALPHA(770);
 

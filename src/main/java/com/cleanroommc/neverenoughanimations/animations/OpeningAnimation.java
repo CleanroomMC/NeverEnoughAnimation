@@ -1,13 +1,14 @@
 package com.cleanroommc.neverenoughanimations.animations;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraftforge.client.event.GuiOpenEvent;
+
 import com.cleanroommc.neverenoughanimations.NEA;
 import com.cleanroommc.neverenoughanimations.NEAConfig;
 import com.cleanroommc.neverenoughanimations.api.IAnimatedScreen;
 import com.cleanroommc.neverenoughanimations.util.GlStateManager;
 import com.cleanroommc.neverenoughanimations.util.Interpolations;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraftforge.client.event.GuiOpenEvent;
 
 public class OpeningAnimation {
 
@@ -40,7 +41,7 @@ public class OpeningAnimation {
 
     private static IAnimatedScreen lastGui;
     private static IAnimatedScreen animatedGui;
-    //private static boolean oldAllowAllInteractions = false;
+    // private static boolean oldAllowAllInteractions = false;
     private static long startTime = 0;
     private static boolean shouldCloseLast = false;
 
@@ -51,9 +52,10 @@ public class OpeningAnimation {
         startTime = NEA.time();
         if (!open) {
             startTime = -startTime;
-            Minecraft.getMinecraft().setIngameFocus();
-            //oldAllowAllInteractions = ((GuiScreen) container).allowUserInput;
-            //((GuiScreen) container).allowUserInput = true;
+            Minecraft.getMinecraft()
+                .setIngameFocus();
+            // oldAllowAllInteractions = ((GuiScreen) container).allowUserInput;
+            // ((GuiScreen) container).allowUserInput = true;
         }
     }
 
@@ -122,9 +124,10 @@ public class OpeningAnimation {
 
     public static void checkGuiToClose() {
         if (shouldCloseLast && lastGui != null) {
-            //((GuiScreen) lastGui).allowUserInput = oldAllowAllInteractions;
-            //oldAllowAllInteractions = false;
-            Minecraft.getMinecraft().displayGuiScreen(null);
+            // ((GuiScreen) lastGui).allowUserInput = oldAllowAllInteractions;
+            // oldAllowAllInteractions = false;
+            Minecraft.getMinecraft()
+                .displayGuiScreen(null);
             shouldCloseLast = false;
             lastGui = null;
         }

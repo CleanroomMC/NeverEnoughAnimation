@@ -1,8 +1,9 @@
 package com.cleanroommc.neverenoughanimations;
 
+import net.minecraft.client.gui.GuiScreen;
+
 import com.gtnewhorizon.gtnhlib.config.ConfigException;
 import com.gtnewhorizon.gtnhlib.config.SimpleGuiConfig;
-import net.minecraft.client.gui.GuiScreen;
 
 public class NEAGuiConfig extends SimpleGuiConfig {
 

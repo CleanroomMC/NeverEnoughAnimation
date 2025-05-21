@@ -1,6 +1,7 @@
 package com.cleanroommc.neverenoughanimations.util;
 
 public enum ClickType {
+
     PICKUP,
     QUICK_MOVE,
     SWAP,

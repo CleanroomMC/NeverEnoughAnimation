@@ -1,11 +1,12 @@
 package com.cleanroommc.neverenoughanimations.api;
 
-import com.cleanroommc.neverenoughanimations.NEA;
-import com.cleanroommc.neverenoughanimations.core.mixin.early.GuiContainerAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
+import com.cleanroommc.neverenoughanimations.NEA;
+import com.cleanroommc.neverenoughanimations.core.mixin.early.GuiContainerAccessor;
 
 public interface IItemLocation {
 

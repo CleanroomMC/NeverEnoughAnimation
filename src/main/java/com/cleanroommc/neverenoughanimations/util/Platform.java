@@ -1,13 +1,14 @@
 package com.cleanroommc.neverenoughanimations.util;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
-import org.lwjgl.opengl.GL11;
 
-import javax.annotation.Nullable;
+import org.lwjgl.opengl.GL11;
 
 public class Platform {
 
@@ -45,7 +46,8 @@ public class Platform {
 
     public static boolean canItemStacksStack(@Nullable ItemStack a, @Nullable ItemStack b) {
         if (a != null && b != null && a.isItemEqual(b) && a.hasTagCompound() == b.hasTagCompound()) {
-            return (!a.hasTagCompound() || a.getTagCompound().equals(b.getTagCompound()));
+            return (!a.hasTagCompound() || a.getTagCompound()
+                .equals(b.getTagCompound()));
         } else {
             return false;
         }
@@ -53,10 +55,23 @@ public class Platform {
 
     public static void drawItem(RenderItem renderItem, ItemStack stack, int x, int y, FontRenderer fontRenderer) {
         if (isStackEmpty(stack)) return;
-        FontRenderer font = stack.getItem().getFontRenderer(stack);
+        FontRenderer font = stack.getItem()
+            .getFontRenderer(stack);
         if (font == null) font = fontRenderer;
-        renderItem.renderItemAndEffectIntoGUI(font, Minecraft.getMinecraft().getTextureManager(), stack, x, y);
-        renderItem.renderItemOverlayIntoGUI(font, Minecraft.getMinecraft().getTextureManager(), stack, x, y);
+        renderItem.renderItemAndEffectIntoGUI(
+            font,
+            Minecraft.getMinecraft()
+                .getTextureManager(),
+            stack,
+            x,
+            y);
+        renderItem.renderItemOverlayIntoGUI(
+            font,
+            Minecraft.getMinecraft()
+                .getTextureManager(),
+            stack,
+            x,
+            y);
         // see RenderItem#L627
         if (stack.hasEffect(0)) {
             OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);

@@ -1,20 +1,22 @@
 package com.cleanroommc.neverenoughanimations;
 
-import codechicken.nei.ItemStackSet;
-import codechicken.nei.guihook.GuiContainerManager;
-import codechicken.nei.util.ReadableNumberConverter;
-import com.cleanroommc.neverenoughanimations.animations.ItemHoverAnimation;
-import com.cleanroommc.neverenoughanimations.util.GlStateManager;
+import static codechicken.lib.gui.GuiDraw.fontRenderer;
+import static codechicken.lib.gui.GuiDraw.renderEngine;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+
 import org.lwjgl.opengl.GL11;
 
-import static codechicken.lib.gui.GuiDraw.fontRenderer;
-import static codechicken.lib.gui.GuiDraw.renderEngine;
+import com.cleanroommc.neverenoughanimations.animations.ItemHoverAnimation;
+import com.cleanroommc.neverenoughanimations.util.GlStateManager;
+
+import codechicken.nei.ItemStackSet;
+import codechicken.nei.guihook.GuiContainerManager;
+import codechicken.nei.util.ReadableNumberConverter;
 
 public class NEICompat {
 
@@ -22,29 +24,32 @@ public class NEICompat {
 
     // NEI is so invasive that replacing it is the only option
     public static void safeItemRenderContext(ItemStack stack, int x, int y, FontRenderer fontRenderer,
-                                              Runnable callback) {
+        Runnable callback) {
         float zLevel = GuiContainerManager.drawItems.zLevel += 100F;
         GuiContainerManager.enableMatrixStackLogging();
         GuiContainerManager.enable3DRender();
 
         try {
             if (renderingErrorItems.contains(stack)) {
-                GuiContainerManager.drawItems.renderItemIntoGUI(fontRenderer, renderEngine, new ItemStack(Blocks.fire), x, y);
+                GuiContainerManager.drawItems
+                    .renderItemIntoGUI(fontRenderer, renderEngine, new ItemStack(Blocks.fire), x, y);
             } else {
                 callback.run();
             }
 
-            if (!GuiContainerManager.checkMatrixStack()) throw new IllegalStateException("Modelview matrix stack too deep");
-            //if (Tessellator.instance.isDrawing) throw new IllegalStateException("Still drawing");
+            if (!GuiContainerManager.checkMatrixStack())
+                throw new IllegalStateException("Modelview matrix stack too deep");
+            // if (Tessellator.instance.isDrawing) throw new IllegalStateException("Still drawing");
         } catch (Exception e) {
             System.err.println("Error while rendering: " + stack + " (" + e.getMessage() + ")");
             e.printStackTrace();
 
             GuiContainerManager.restoreMatrixStack();
-            //if (Tessellator.instance.isDrawing) Tessellator.instance.draw();
+            // if (Tessellator.instance.isDrawing) Tessellator.instance.draw();
 
             GuiContainerManager.drawItems.zLevel = zLevel;
-            GuiContainerManager.drawItems.renderItemIntoGUI(fontRenderer, renderEngine, new ItemStack(Blocks.fire), x, y);
+            GuiContainerManager.drawItems
+                .renderItemIntoGUI(fontRenderer, renderEngine, new ItemStack(Blocks.fire), x, y);
             renderingErrorItems.add(stack);
         }
 
@@ -53,8 +58,8 @@ public class NEICompat {
         GuiContainerManager.drawItems.zLevel = zLevel - 100;
     }
 
-    public static void renderItem(GuiContainer container, Slot slotIn, int offsetX, int offsetY, ItemStack itemstack, FontRenderer fontRenderer,
-                                  boolean smallAmount, String quantity) {
+    public static void renderItem(GuiContainer container, Slot slotIn, int offsetX, int offsetY, ItemStack itemstack,
+        FontRenderer fontRenderer, boolean smallAmount, String quantity) {
 
         safeItemRenderContext(itemstack, offsetX, offsetY, fontRenderer, () -> {
             float scale = smallAmount ? 0.5f : 1f;
@@ -89,14 +94,16 @@ public class NEICompat {
                     GlStateManager.translate(-x, -y, 0);
                 }
             }
-            GuiContainerManager.drawItems.renderItemAndEffectIntoGUI(fontRenderer, renderEngine, itemstack, offsetX, offsetY);
+            GuiContainerManager.drawItems
+                .renderItemAndEffectIntoGUI(fontRenderer, renderEngine, itemstack, offsetX, offsetY);
 
             if (scale != 1f && !stackSize.isEmpty()) {
                 drawBigStackSize(offsetX, offsetY, stackSize, scale);
                 stackSize = "";
             }
 
-            GuiContainerManager.drawItems.renderItemOverlayIntoGUI(fontRenderer, renderEngine, itemstack, offsetX, offsetY, stackSize);
+            GuiContainerManager.drawItems
+                .renderItemOverlayIntoGUI(fontRenderer, renderEngine, itemstack, offsetX, offsetY, stackSize);
             if (NEAConfig.hoverAnimationTime > 0) {
                 GlStateManager.popMatrix();
             }
