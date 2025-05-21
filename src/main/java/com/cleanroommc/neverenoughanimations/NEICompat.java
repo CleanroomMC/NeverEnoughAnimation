@@ -3,6 +3,8 @@ package com.cleanroommc.neverenoughanimations;
 import static codechicken.lib.gui.GuiDraw.fontRenderer;
 import static codechicken.lib.gui.GuiDraw.renderEngine;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.init.Blocks;
@@ -18,6 +20,7 @@ import codechicken.nei.ItemStackSet;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.util.ReadableNumberConverter;
 
+@SideOnly(Side.CLIENT)
 public class NEICompat {
 
     private static final ItemStackSet renderingErrorItems = new ItemStackSet();

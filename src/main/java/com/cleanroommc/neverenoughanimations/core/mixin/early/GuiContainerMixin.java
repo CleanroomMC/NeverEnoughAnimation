@@ -53,7 +53,7 @@ public abstract class GuiContainerMixin extends GuiScreen implements IAnimatedSc
         }
     }
 
-    @Inject(
+    /*@Inject(
         method = "func_146977_a",
         at = @At(
             value = "INVOKE",
@@ -111,7 +111,7 @@ public abstract class GuiContainerMixin extends GuiScreen implements IAnimatedSc
             }
         }
         GlStateManager.popMatrix();
-    }
+    }*/
 
     @Redirect(
         method = "drawScreen",

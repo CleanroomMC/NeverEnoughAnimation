@@ -20,8 +20,8 @@ public class MinecraftMixin {
             ordinal = 1,
             shift = At.Shift.AFTER))
     public void timer(CallbackInfo ci) {
-        NEA.timer60Tps.updateTimer();
-        for (int j = 0; j < Math.min(20, NEA.timer60Tps.elapsedTicks); ++j) {
+        NEA.getTimer60Tps().updateTimer();
+        for (int j = 0; j < Math.min(20, NEA.getTimer60Tps().elapsedTicks); ++j) {
             NEA.onFrameTick();
         }
     }

@@ -1,5 +1,7 @@
 package com.cleanroommc.neverenoughanimations;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.launchwrapper.Launch;
@@ -32,7 +34,8 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
     modid = Tags.MODID,
     version = Tags.VERSION,
     name = Tags.MODNAME,
-    acceptedMinecraftVersions = "[1.7.10,)",
+    acceptedMinecraftVersions = "[1.7.10]",
+    acceptableRemoteVersions = "*",
     dependencies = "required-after:gtnhmixins@[2.0.1,);",
     guiFactory = "com.cleanroommc.neverenoughanimations.NEAGuiConfigFactory")
 public class NEA {
@@ -40,17 +43,22 @@ public class NEA {
     public static final Logger LOGGER = LogManager.getLogger(Tags.MODID);
     private static boolean itemBordersLoaded = false, jeiLoaded = false, heiLoaded = false;
 
-    private static GuiScreen currentDrawnScreen = null;
+    @SideOnly(Side.CLIENT)
+    private static GuiScreen currentDrawnScreen;
     private static float openAnimationValue = 1f;
     private static int mouseX, mouseY;
 
     public static final boolean isDevEnv = (boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
 
-    public static final Timer timer60Tps = new Timer(60f);
+    @SideOnly(Side.CLIENT)
+    private static Timer timer60Tps;
 
+    @SideOnly(Side.CLIENT)
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        if (event.getSide().isServer()) return;
         MinecraftForge.EVENT_BUS.register(this);
+        timer60Tps = new Timer(60f);
         itemBordersLoaded = Loader.isModLoaded("itemborders");
         jeiLoaded = Loader.isModLoaded("jei");
         if (jeiLoaded) {
@@ -66,6 +74,7 @@ public class NEA {
         }
     }
 
+    @SideOnly(Side.CLIENT)
     public static void onFrameTick() {
         OpeningAnimation.checkGuiToClose();
     }
@@ -79,6 +88,7 @@ public class NEA {
      * }
      */
 
+    @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onGuiOpen(GuiOpenEvent event) {
         if (OpeningAnimation.onGuiOpen(event)) return;
@@ -87,6 +97,7 @@ public class NEA {
         ItemPickupThrowAnimation.onGuiOpen(event);
     }
 
+    @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public void onGuiDrawPre(GuiScreenEvent.DrawScreenEvent.Pre event) {
         mouseX = event.mouseX;
@@ -101,6 +112,7 @@ public class NEA {
         }
     }
 
+    @SideOnly(Side.CLIENT)
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onGuiDrawPost(GuiScreenEvent.DrawScreenEvent.Post event) {
         if (OpeningAnimation.currentlyScaling && event.gui instanceof IAnimatedScreen screen) {
@@ -139,28 +151,39 @@ public class NEA {
      * }
      */
 
+    @SideOnly(Side.CLIENT)
+    public static Timer getTimer60Tps() {
+        return timer60Tps;
+    }
+
+    @SideOnly(Side.CLIENT)
     public static int getMouseX() {
         return mouseX;
     }
 
+    @SideOnly(Side.CLIENT)
     public static int getMouseY() {
         return mouseY;
     }
 
+    @SideOnly(Side.CLIENT)
     public static @Nullable GuiScreen getCurrentDrawnScreen() {
         return currentDrawnScreen;
     }
 
+    @SideOnly(Side.CLIENT)
     public static float getCurrentOpenAnimationValue() {
         // only works while rendering gui
         return openAnimationValue;
     }
 
+    @SideOnly(Side.CLIENT)
     public static boolean isCurrentGuiAnimating() {
         // only works while rendering gui
         return currentDrawnScreen != null && openAnimationValue < 1f;
     }
 
+    @SideOnly(Side.CLIENT)
     public static void drawScreenDebug(GuiContainer container, int mouseX, int mouseY) {
         /*
          * if (!isDevEnv || container.getClass().getName().contains("modularui")) return;
@@ -196,31 +219,38 @@ public class NEA {
          */
     }
 
+    @SideOnly(Side.CLIENT)
     public static boolean isItemBordersLoaded() {
         return itemBordersLoaded;
     }
 
+    @SideOnly(Side.CLIENT)
     public static boolean isJeiLoaded() {
         return jeiLoaded;
     }
 
+    @SideOnly(Side.CLIENT)
     public static boolean isHeiLoaded() {
         return heiLoaded;
     }
 
+    @SideOnly(Side.CLIENT)
     public static long time() {
         return System.nanoTime() / 1_000_000L;
     }
 
+    @SideOnly(Side.CLIENT)
     public static int getAlpha(int argb) {
         return argb >> 24 & 255;
     }
 
+    @SideOnly(Side.CLIENT)
     public static int withAlpha(int argb, int alpha) {
         argb &= ~(0xFF << 24);
         return argb | alpha << 24;
     }
 
+    @SideOnly(Side.CLIENT)
     public static int withAlpha(int argb, float alpha) {
         return withAlpha(argb, (int) (alpha * 255));
     }
