@@ -72,7 +72,7 @@ public class NEAConfig {
         String name = screen.getClass().getName();
         for (String gui : guiAnimationBlacklist) {
             if (gui.endsWith("*")) {
-                if (name.startsWith(gui.substring(gui.length() - 1))) {
+                if (name.startsWith(gui.substring(0, gui.length() - 1))) {
                     blacklistCache.put(screen.getClass(), true);
                     return true;
                 }
