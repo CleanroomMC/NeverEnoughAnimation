@@ -1,0 +1,12 @@
+{
+  "package": "com.cleanroommc.neverenoughanimations.core.mixin.draconicevolution",
+  "refmap": "mixins.neverenoughanimations.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "GuiDraconiumChestMixin"
+  ],
+  "mixins": [
+  ]
+}
