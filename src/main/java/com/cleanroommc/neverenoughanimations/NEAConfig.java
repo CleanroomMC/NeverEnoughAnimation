@@ -60,7 +60,7 @@ public class NEAConfig {
     @Config.Name("Gui class animation blacklist")
     @Config.Comment({"Add class names (works with * at the end) which should be blacklisted from any animations.",
             "This is used to prevent visual issues with certain mods."})
-    public static String[] guiAnimationBlacklist = {"gregtech.*", "com.cleanroommc.modularui.*"};
+    public static String[] guiAnimationBlacklist = {"gregtech.*", "com.cleanroommc.modularui.*", "com.creativemd.creativecore.*"};
 
     @Config.Ignore
     public static Object2BooleanOpenHashMap<Class<?>> blacklistCache = new Object2BooleanOpenHashMap<>();
