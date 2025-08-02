@@ -50,5 +50,4 @@ dependencies {
     compileOnly rfg.deobf('curse.maven:thermal_expansion-69163:2926431')
     compileOnly rfg.deobf('curse.maven:thermal_foundation-222880:2926428')
     compileOnly rfg.deobf('curse.maven:redstone_flux-270789:2920436')
-
 }

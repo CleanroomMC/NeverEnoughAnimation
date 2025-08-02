@@ -13,8 +13,8 @@
     "GuiIngameMixin",
     "GuiScreenMixin",
     "InventoryPlayerMixin",
+    "LightUtilMixin",
     "MinecraftMixin",
-    "RenderItemMixin",
     "SlotMixin"
   ],
   "mixins": [
