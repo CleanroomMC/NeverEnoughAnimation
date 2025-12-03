@@ -57,6 +57,10 @@ public class NEAConfig {
     @Config.Comment("The scale at which the opening animation starts. What looks good depends on the animation time. Rule of thumb is the shorter the animation time, the larger the start scale.")
     public static float openingStartScale = 0.9f;
 
+    @Config.Name("Animate dark GUI background")
+    @Config.Comment("If the dark background should be animated too during opening animation. This will fade in the alpha if the background color. However this may cause issues with resource packs which disable the dark background.")
+    public static boolean animateDarkGuiBackground = true;
+
     @Config.Name("Gui class animation blacklist")
     @Config.Comment({"Add class names (works with * at the end) which should be blacklisted from any animations.",
             "This is used to prevent visual issues with certain mods."})
