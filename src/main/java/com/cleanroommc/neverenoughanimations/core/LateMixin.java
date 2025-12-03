@@ -15,7 +15,8 @@ public class LateMixin implements ILateMixinLoader {
             "jei",
             "mousetweaks",
             "thermalexpansion",
-            "draconicevolution"
+            "draconicevolution",
+            "avaritiaddons"
     };
 
     @Override

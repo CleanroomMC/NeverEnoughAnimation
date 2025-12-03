@@ -44,6 +44,10 @@ dependencies {
     implementation rfg.deobf("curse.maven:mouse_tweaks_unofficial-461660:4661407")
     implementation rfg.deobf("curse.maven:trashslot-235577:2722385")
 
+    compileOnly rfg.deobf("curse.maven:avaritia-1-1x-unofficial-1165010:7186329")
+    compileOnly rfg.deobf("curse.maven:avaritiaddons-248873:4745387")
+    compileOnly rfg.deobf("curse.maven:wanionlib-253043:4623135")
+
     compileOnly rfg.deobf("curse.maven:draconic_evolution-223565:3431261")
     compileOnly rfg.deobf("curse.maven:brandons_core-231382:3408276")
     compileOnly rfg.deobf("curse.maven:redstone_flux-270789:2920436")
