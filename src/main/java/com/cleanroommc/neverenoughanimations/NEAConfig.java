@@ -3,6 +3,8 @@ package com.cleanroommc.neverenoughanimations;
 import com.cleanroommc.neverenoughanimations.util.Interpolation;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraftforge.common.config.Config;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
 
 @Config(modid = Tags.MODID)
 public class NEAConfig {
@@ -64,7 +66,7 @@ public class NEAConfig {
     @Config.Name("Gui class animation blacklist")
     @Config.Comment({"Add class names (works with * at the end) which should be blacklisted from any animations.",
             "This is used to prevent visual issues with certain mods."})
-    public static String[] guiAnimationBlacklist = {"gregtech.*", "com.cleanroommc.modularui.*", "com.creativemd.creativecore.*"};
+    public static String[] guiAnimationBlacklist = {};
 
     @Config.Ignore
     public static Object2BooleanOpenHashMap<Class<?>> blacklistCache = new Object2BooleanOpenHashMap<>();
@@ -74,6 +76,22 @@ public class NEAConfig {
         if (guiAnimationBlacklist.length == 0) return false;
         if (blacklistCache.containsKey(screen.getClass())) return blacklistCache.getBoolean(screen.getClass());
         String name = screen.getClass().getName();
+
+        if (name.startsWith("gregtech.") || name.startsWith("com.creativemd.creativecore.")) {
+            blacklistCache.put(screen.getClass(), true);
+            return true;
+        }
+        if (name.startsWith("com.cleanroommc.modularui.")) {
+            boolean blacklisted = true;
+            ModContainer mod = Loader.instance().getIndexedModList().get("modularui");
+            if (mod != null) {
+                int major = Integer.parseInt(mod.getVersion().split("\\.")[0]);
+                blacklisted = major < 3;
+            }
+            blacklistCache.put(screen.getClass(), blacklisted);
+            return blacklisted;
+        }
+
         for (String gui : guiAnimationBlacklist) {
             if (gui.endsWith("*")) {
                 if (name.startsWith(gui.substring(0, gui.length() - 1))) {

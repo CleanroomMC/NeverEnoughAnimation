@@ -58,6 +58,10 @@ dependencies {
     compileOnly rfg.deobf("curse.maven:brandons_core-231382:3408276")
     compileOnly rfg.deobf("curse.maven:redstone_flux-270789:2920436")
 
+    // little tiles
+    compileOnly rfg.deobf("curse.maven:littletiles-257818:5180387")
+    compileOnly rfg.deobf("curse.maven:creativecore-257814:4722163")
+
     // rustic
     compileOnly rfg.deobf("curse.maven:rustic-256141:6031613")
 
