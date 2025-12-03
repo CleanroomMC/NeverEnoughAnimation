@@ -44,14 +44,21 @@ dependencies {
     implementation rfg.deobf("curse.maven:mouse_tweaks_unofficial-461660:4661407")
     implementation rfg.deobf("curse.maven:trashslot-235577:2722385")
 
+    // avaritia + avaritiaddons
     compileOnly rfg.deobf("curse.maven:avaritia-1-1x-unofficial-1165010:7186329")
     compileOnly rfg.deobf("curse.maven:avaritiaddons-248873:4745387")
     compileOnly rfg.deobf("curse.maven:wanionlib-253043:4623135")
 
+    // colossal chests
+    compileOnly rfg.deobf("curse.maven:colossal-chests-237875:2718588")
+    compileOnly rfg.deobf("curse.maven:cyclops-core-232758:3159497")
+
+    // draconic evo
     compileOnly rfg.deobf("curse.maven:draconic_evolution-223565:3431261")
     compileOnly rfg.deobf("curse.maven:brandons_core-231382:3408276")
     compileOnly rfg.deobf("curse.maven:redstone_flux-270789:2920436")
 
+    // thermal
     implementation "codechicken:codechickenlib:3.2.3.358", { transitive false }
     compileOnly rfg.deobf('curse.maven:cofh_core-69162:2920433')
     compileOnly rfg.deobf('curse.maven:cofh_world-271384:2920434')
