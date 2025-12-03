@@ -49,15 +49,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.PAT }}
 
       - name: Read current mod version
         id: read_version
         run: |
-          mod_version=$(grep "modVersion" gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')
-          echo "Current mod version: $mod_version"
+          mod_version=$(grep -E '^[[:space:]]*modVersion[[:space:]]*=' buildscript.properties | cut -d'=' -f2 | tr -d '[:space:]')
+          echo "Current mod version: -$mod_version-"
           if [ "$mod_version" == "${{inputs.version}}" ]; then
             echo "UPDATED=true" >> $GITHUB_ENV
           else
@@ -85,15 +85,15 @@ jobs:
 
       - name: Set version
         if: env.UPDATED == 'false' # only change new version if it's not already updated
-        run: sed -i "s/modVersion.*=.*/modVersion = ${{ github.event.inputs.version }}/g" gradle.properties
+        run: sed -i -E "s/^[[:space:]]*modVersion[[:space:]]*=.*/modVersion = ${{ github.event.inputs.version }}/" buildscript.properties
 
       - name: Commit and push gradle.properties
         if: env.UPDATED == 'false' # only push new version if it's not already updated
-        uses: stefanzweifel/git-auto-commit-action@v5.0.1
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Bump version to ${{ github.event.inputs.version }}"
           commit_options: "--no-verify"
-          file_pattern: gradle.properties
+          file_pattern: buildscript.properties
           tagging_message: "v${{ github.event.inputs.version }}"
 
       - name: Check for publishing
@@ -104,23 +104,23 @@ jobs:
           fi
 
       - name: Setup Java
-        uses: actions/setup-java@v4.2.1
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '8'
+          java-version: '21'
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3.4.2
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Build Project
         run: ./gradlew build
 
       - name: Publish to GitHub
         if: env.publish-gh == 'true'
-        uses: softprops/action-gh-release@v2.0.6
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: "v${{ inputs.version }}"
           token: ${{ secrets.PAT }}
