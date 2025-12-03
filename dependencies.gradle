@@ -58,6 +58,9 @@ dependencies {
     compileOnly rfg.deobf("curse.maven:brandons_core-231382:3408276")
     compileOnly rfg.deobf("curse.maven:redstone_flux-270789:2920436")
 
+    // rustic
+    compileOnly rfg.deobf("curse.maven:rustic-256141:6031613")
+
     // thermal
     implementation "codechicken:codechickenlib:3.2.3.358", { transitive false }
     compileOnly rfg.deobf('curse.maven:cofh_core-69162:2920433')

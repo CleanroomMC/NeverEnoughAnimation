@@ -17,7 +17,8 @@ public class LateMixin implements ILateMixinLoader {
             "thermalexpansion",
             "draconicevolution",
             "avaritiaddons",
-            "colossalchests"
+            "colossalchests",
+            "rustic"
     };
 
     @Override
