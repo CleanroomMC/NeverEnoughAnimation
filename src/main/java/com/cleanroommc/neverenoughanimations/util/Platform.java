@@ -15,7 +15,7 @@ public class Platform {
     public static final ItemStack EMPTY_STACK = null;
 
     public static boolean isStackEmpty(ItemStack stack) {
-        return stack == null || stack.getItem() == null || stack.stackSize <= 0;
+        return stack == null || stack.getItem() == null;
     }
 
     public static ItemStack copyStack(ItemStack stack) {

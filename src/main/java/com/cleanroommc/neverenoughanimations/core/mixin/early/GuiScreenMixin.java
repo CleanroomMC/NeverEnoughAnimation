@@ -1,5 +1,7 @@
 package com.cleanroommc.neverenoughanimations.core.mixin.early;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 
@@ -16,17 +18,17 @@ import com.cleanroommc.neverenoughanimations.animations.OpeningAnimation;
 @Mixin(GuiScreen.class)
 public class GuiScreenMixin extends Gui {
 
-    @Redirect(
-        method = "drawWorldBackground",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;drawGradientRect(IIIIII)V"))
-    public void fadeBackground(GuiScreen instance, int left, int top, int width, int height, int startColor,
-        int endColor) {
-        float alpha = OpeningAnimation.getValue(instance);
-        if (alpha < 1f) {
-            startColor = NEA.withAlpha(startColor, (int) (NEA.getAlpha(startColor) * alpha));
-            endColor = NEA.withAlpha(endColor, (int) (NEA.getAlpha(endColor) * alpha));
+    @WrapOperation(method = "drawWorldBackground",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;drawGradientRect(IIIIII)V"))
+    public void fadeBackground(GuiScreen instance, int left, int top, int width, int height, int startColor, int endColor, Operation<Void> original) {
+        if (NEAConfig.animateDarkGuiBackground) {
+            float alpha = OpeningAnimation.getValue(instance);
+            if (alpha < 1f) {
+                startColor = NEA.withAlpha(startColor, (int) (NEA.getAlpha(startColor) * alpha));
+                endColor = NEA.withAlpha(endColor, (int) (NEA.getAlpha(endColor) * alpha));
+            }
         }
-        drawGradientRect(left, top, width, height, startColor, endColor);
+        original.call(instance, left, top, width, height, startColor, endColor);
     }
 
     @Inject(method = "drawDefaultBackground", at = @At("RETURN"))

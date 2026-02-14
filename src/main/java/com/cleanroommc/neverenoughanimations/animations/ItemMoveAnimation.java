@@ -131,7 +131,7 @@ public class ItemMoveAnimation {
                 stacks.add(Platform.EMPTY_STACK);
             } else if (Platform.canItemStacksStack(item, other)) {
                 slots.add(slot);
-                stacks.add(other.copy());
+                stacks.add(Platform.copyStack(other));
             }
         }
         return Pair.of(slots, stacks);
@@ -161,7 +161,7 @@ public class ItemMoveAnimation {
                 // was empty
                 if (!Platform.isStackEmpty(newStack)) {
                     // now it's not empty -> found
-                    ItemMovePacket packet = new ItemMovePacket(time, sourceLoc, slot, newStack.copy());
+                    ItemMovePacket packet = new ItemMovePacket(time, sourceLoc, slot, Platform.copyStack(newStack));
                     packets.add(packet);
                     total -= Platform.getCount(newStack);
                     stagedVirtualStacks.put(slot.nea$getSlotNumber(), oldStack);
@@ -170,7 +170,7 @@ public class ItemMoveAnimation {
                 // the stackable check is not really necessary but is still here for safety
                 if (Platform.getCount(oldStack) < Platform.getCount(newStack)) {
                     // stackable and amount changed -> found
-                    ItemStack movingStack = newStack.copy();
+                    ItemStack movingStack = Platform.copyStack(newStack);
                     Platform.shrink(movingStack, Platform.getCount(oldStack));
                     ItemMovePacket packet = new ItemMovePacket(time, sourceLoc, slot, movingStack);
                     packets.add(packet);

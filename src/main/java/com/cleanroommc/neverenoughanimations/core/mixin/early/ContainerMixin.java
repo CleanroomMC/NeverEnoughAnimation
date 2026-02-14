@@ -73,8 +73,7 @@ public abstract class ContainerMixin {
                 return;
             }
 
-            ItemStack oldStack = fromSlot.getStack()
-                .copy();
+            ItemStack oldStack = Platform.copyStack(fromSlot.getStack());
             Pair<List<Slot>, List<ItemStack>> candidates = ItemMoveAnimation.getCandidates(fromSlot, inventorySlots);
             ItemStack returnable = Platform.EMPTY_STACK;
             // looping so that crafting works properly
@@ -115,9 +114,7 @@ public abstract class ContainerMixin {
     public void pickupAllPre(int slotId, int dragType, int clickTypeIn, EntityPlayer player,
         CallbackInfoReturnable<ItemStack> cir, @Share("cursor") LocalRef<ItemStack> cursor) {
         if (NEAConfig.moveAnimationTime == 0) return;
-        cursor.set(
-            player.inventory.getItemStack()
-                .copy());
+        cursor.set(Platform.copyStack(player.inventory.getItemStack()));
     }
 
     @WrapOperation(
@@ -129,8 +126,8 @@ public abstract class ContainerMixin {
             // handle animation
             if (packets.get() == null) packets.set(new Int2ObjectArrayMap<>());
             IItemLocation source = IItemLocation.of(slot);
-            ItemStack movingStack = instance.copy();
-            Platform.setCount(movingStack, quantity - instance.stackSize); // contrary to 1.12 this doesnt grow stack
+            ItemStack movingStack = Platform.copyStack(instance);
+            Platform.setCount(movingStack, quantity - Platform.getCount(instance)); // contrary to 1.12 this doesnt grow stack
                                                                            // size by quantity, but sets stack size by
                                                                            // quantity, so we need to adjust it here
             packets.get()
@@ -184,7 +181,7 @@ public abstract class ContainerMixin {
             target = "Lnet/minecraft/entity/player/EntityPlayer;dropPlayerItemWithRandomChoice(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/item/EntityItem;"))
     public ItemStack animateThrow(ItemStack itemStackIn, @Local(ordinal = 0, argsOnly = true) int slot) {
         if (NEAConfig.appearAnimationTime > 0 && slot == -999) {
-            ItemPickupThrowAnimation.animate(NEA.getMouseX() - 8, NEA.getMouseY() - 8, itemStackIn.copy(), true);
+            ItemPickupThrowAnimation.animate(NEA.getMouseX() - 8, NEA.getMouseY() - 8, Platform.copyStack(itemStackIn), true);
         }
         return itemStackIn;
     }

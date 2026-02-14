@@ -65,9 +65,7 @@ public class SwapHolder {
                         time,
                         hovering,
                         hotbar,
-                        Platform.copyStack(
-                            hotbar.nea$getStack()
-                                .copy())));
+                        Platform.copyStack(hotbar.nea$getStack())));
                 ItemMoveAnimation.updateVirtualStack(hotbar.nea$getSlotNumber(), Platform.EMPTY_STACK, 1);
             }
         } else if (this.targetSlot.inventory instanceof InventoryPlayer) {
@@ -89,9 +87,7 @@ public class SwapHolder {
                     time,
                     hovering,
                     hotbar,
-                    Platform.copyStack(
-                        hotbar.nea$getStack()
-                            .copy())));
+                    Platform.copyStack(hotbar.nea$getStack())));
             ItemMoveAnimation.updateVirtualStack(hotbar.nea$getSlotNumber(), Platform.EMPTY_STACK, 1);
         }
         reset();
