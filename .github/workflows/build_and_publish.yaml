@@ -119,6 +119,8 @@ jobs:
 
       - name: Build Project
         run: ./gradlew build
+        env:
+          VERSION: "${{ github.event.inputs.version }}-mc1.7.10"
 
       - name: Publish to GitHub
         if: env.publish-gh == 'true'
